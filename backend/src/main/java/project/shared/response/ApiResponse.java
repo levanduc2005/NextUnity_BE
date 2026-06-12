@@ -1,5 +1,6 @@
 package project.shared.response;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ public class ApiResponse<T> {
 
     private int code;
     private String message;
+    @Nullable
     private T data;
 
     // Helper methods for Success

@@ -1,30 +1,28 @@
 package project.identity.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import project.shared.common.SoftDeleteEntity;
-import project.user.entity.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "roles")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@SQLDelete(sql = """
+    UPDATE roles
+    SET deleted_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+""")
+@SQLRestriction("deleted_at IS NULL")
 public class Role extends SoftDeleteEntity {
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     private String description;
-
-    @OneToMany(
-            mappedBy = "role",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<User> users = new ArrayList<>();
-
 }

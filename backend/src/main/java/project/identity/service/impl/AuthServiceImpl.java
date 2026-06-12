@@ -6,6 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import project.identity.dto.request.RegisterRequest;
 import project.identity.dto.cache.RegisterCache;
+import project.identity.dto.request.VerifyOtpRequest;
+import project.identity.entity.Role;
+import project.identity.repository.RoleRepository;
 import project.identity.service.AuthService;
 import project.identity.util.OtpGenerator;
 import project.shared.error.ErrorCode;
@@ -13,6 +16,8 @@ import project.shared.exception.AppException;
 import project.shared.mail.MailService;
 import project.shared.redis.RedisKey;
 import project.shared.redis.RedisService;
+import project.shared.util.EmailUtils;
+import project.user.entity.User;
 import project.user.service.UserService;
 
 import java.time.Duration;
@@ -27,6 +32,8 @@ public class AuthServiceImpl implements AuthService {
     private final MailService mailService;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final RoleRepository roleRepository;
 
     @Override
     public void register(RegisterRequest request) {
@@ -67,5 +74,37 @@ public class AuthServiceImpl implements AuthService {
             redisService.delete(RedisKey.REGISTER + email);
             throw new AppException(ErrorCode.CANNOT_SEND_EMAIL);
         }
+    }
+
+    @Override
+    public void verifyOtp(VerifyOtpRequest request) {
+
+        String email = EmailUtils.normalize(request.email());
+
+        RegisterCache cache = redisService.get(
+                RedisKey.REGISTER + email,
+                RegisterCache.class
+        );
+
+        if (cache == null) {
+            throw new AppException(ErrorCode.OTP_EXPIRED);
+        }
+
+        if (!cache.otp().equals(request.otp())) {
+            throw new AppException(ErrorCode.INVALID_OTP);
+        }
+
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        User user = new User();
+        user.setEmail(cache.email());
+        user.setPasswordHash(cache.password());
+        user.setUsername(cache.username());
+        user.setRole(userRole);
+
+        userService.saveUser(user);
+
+        redisService.delete(RedisKey.REGISTER + email);
     }
 }
