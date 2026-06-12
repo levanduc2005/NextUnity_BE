@@ -4,12 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import project.identity.dto.request.LoginRequest;
+import project.identity.dto.request.LoginResult;
 import project.identity.dto.request.RegisterRequest;
 import project.identity.dto.cache.RegisterCache;
 import project.identity.dto.request.VerifyOtpRequest;
+import project.identity.dto.response.LoginResponse;
 import project.identity.entity.Role;
 import project.identity.repository.RoleRepository;
+import project.identity.security.JwtService;
 import project.identity.service.AuthService;
+import project.identity.service.RefreshTokenService;
 import project.identity.util.OtpGenerator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
@@ -18,6 +23,7 @@ import project.shared.redis.RedisKey;
 import project.shared.redis.RedisService;
 import project.shared.util.EmailUtils;
 import project.user.entity.User;
+import project.user.mapper.UserMapper;
 import project.user.service.UserService;
 
 import java.time.Duration;
@@ -30,10 +36,14 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final RedisService redisService;
     private final MailService mailService;
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     private final PasswordEncoder passwordEncoder;
 
     private final RoleRepository roleRepository;
+
+    private final UserMapper userMapper;
 
     @Override
     public void register(RegisterRequest request) {
@@ -106,5 +116,29 @@ public class AuthServiceImpl implements AuthService {
         userService.saveUser(user);
 
         redisService.delete(RedisKey.REGISTER + email);
+    }
+
+    @Override
+    public LoginResult login(LoginRequest request) {
+
+        User user = userService.getUserByEmail(request.email());
+
+        if (!passwordEncoder.matches(
+                request.password(),
+                user.getPasswordHash()
+        )) {
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        }
+
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        refreshTokenService.saveRefreshToken(user.getEmail(), refreshToken);
+
+        return new LoginResult(
+                new LoginResponse(accessToken,
+                        userMapper.toResponse(user)),
+                refreshToken
+        );
     }
 }
