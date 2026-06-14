@@ -49,8 +49,7 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() ->
                         new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        role.setName(request.name().trim().toUpperCase());
-        role.setDescription(request.description());
+        roleMapper.updateRoleFromRequest(request, role);
 
         return roleMapper.toResponse(role);
     }

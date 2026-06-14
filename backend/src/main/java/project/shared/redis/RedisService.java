@@ -1,7 +1,9 @@
 package project.shared.redis;
 
+import java.time.Duration;
+
 public interface RedisService {
-    void set(String key, Object value, java.time.Duration ttl);
+    void set(String key, Object value, Duration ttl);
 
     <T> T get(String key, Class<T> type);
 
