@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import project.identity.config.JwtProperties;
+import project.auth.config.JwtProperties;
 
 @SpringBootApplication
 @EnableJpaAuditing

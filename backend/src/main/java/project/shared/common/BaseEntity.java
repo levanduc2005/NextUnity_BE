@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.github.f4b6a3.uuid.UuidCreator;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -17,8 +18,7 @@ import java.util.UUID;
 public abstract class BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UuidCreator.getTimeOrderedEpoch();
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

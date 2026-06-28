@@ -1,6 +1,6 @@
 package project.user.dto.response;
 
-import project.identity.dto.response.RoleResponse;
+import project.auth.dto.response.RoleResponse;
 
 import java.time.Instant;
 

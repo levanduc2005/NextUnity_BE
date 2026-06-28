@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import project.identity.config.JwtProperties;
+import project.auth.config.JwtProperties;
 
 import java.time.Duration;
 

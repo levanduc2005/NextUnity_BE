@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import project.identity.entity.Role;
+import project.auth.entity.Role;
 import project.shared.common.SoftDeleteEntity;
 
 @Entity

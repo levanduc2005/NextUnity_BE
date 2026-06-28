@@ -26,9 +26,10 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "Email đã tồn tại"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User không tồn tại"),
     // Mail
-    CANNOT_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể gửi email");
-
-
+    CANNOT_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể gửi email"),
+    // Community
+    COMMUNITY_NAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Tên cộng đồng đã tồn tại"),
+    COMMUNITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Cộng đồng không tồn tại");
 
     private final HttpStatus statusCode;
     private final String message;
