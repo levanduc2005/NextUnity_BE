@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import project.community.dto.community.request.CreateCommunityRequest;
 import project.community.dto.community.request.UpdateCommunityRequest;
+import project.community.dto.community.response.CommunityMemberResponse;
 import project.community.dto.community.response.CommunityResponse;
 import project.community.service.CommunityService;
 import project.shared.response.ApiResponse;
@@ -42,6 +43,7 @@ public class CommunityController {
         return ApiResponse.success(response, "Lấy danh sách cộng đồng thành công");
     }
 
+    // Cập nhật mô tả cộng đồng
     @PutMapping("/{id}")
     public ApiResponse<CommunityResponse> updateCommunity(
             @PathVariable UUID id,
@@ -51,11 +53,37 @@ public class CommunityController {
         return ApiResponse.success(response, "Cập nhật mô tả cộng đồng thành công");
     }
 
+    // Xóa cộng đồng
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteCommunity(
             @PathVariable UUID id
     ) {
         communityService.deleteCommunity(id);
         return ApiResponse.success(null, "Xóa cộng đồng thành công");
+    }
+
+    // Tham gia cộng đồng
+    @PostMapping("/{id}/join")
+    public ApiResponse<Void> joinCommunity(
+            @PathVariable UUID id
+    ) {
+        communityService.joinCommunity(id);
+        return ApiResponse.success(null, "Tham gia cộng đồng thành công");
+    }
+
+    // Rời khỏi cộng đồng
+    @PostMapping("/{id}/leave")
+    public ApiResponse<Void> leaveCommunity(
+            @PathVariable UUID id
+    ) {
+        communityService.leaveCommunity(id);
+        return ApiResponse.success(null, "Rời khỏi cộng đồng thành công");
+    }
+
+    // Lấy danh sách thành viên của cộng đồng
+    @GetMapping("/{id}/members")
+    public ApiResponse<List<CommunityMemberResponse>> getCommunityMembers(@PathVariable UUID id) {
+        List<CommunityMemberResponse> response = communityService.getCommunityMembers(id);
+        return ApiResponse.success(response, "Lấy danh sách thành viên thành công");
     }
 }

@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface CommunityService {
     CommunityResponse createCommunity(CreateCommunityRequest request);
-    CommunityResponse getCommunityById(UUID id);
+    CommunityResponse getCommunityById(UUID communityId);
     List<CommunityResponse> getAllCommunities();
-    CommunityResponse updateCommunity(UUID id, UpdateCommunityRequest request);
-    void deleteCommunity(UUID id);
-    void joinCommunity(UUID id);
-    void leaveCommunity(UUID id);
-    List<CommunityMemberResponse> getCommunityMembers(UUID id);
+    CommunityResponse updateCommunity(UUID communityId, UpdateCommunityRequest request);
+    void deleteCommunity(UUID communityId);
+    void joinCommunity(UUID communityId);
+    void leaveCommunity(UUID communityId);
+    List<CommunityMemberResponse> getCommunityMembers(UUID communityId);
 }

@@ -2,7 +2,9 @@ package project.community.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import project.community.dto.community.request.CreateCommunityRequest;
+import project.community.dto.community.request.UpdateCommunityRequest;
 import project.community.dto.community.response.CommunityMemberResponse;
 import project.community.dto.community.response.CommunityResponse;
 import project.community.entity.Community;
@@ -20,6 +22,8 @@ public interface CommunityMapper {
             expression = "java(community.getMembers() != null ? community.getMembers().size() : 0)"
     )
     CommunityResponse toResponse(Community community);
+
+    void updateCommunity(UpdateCommunityRequest request, @MappingTarget Community community);
 
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "username", source = "user.username")

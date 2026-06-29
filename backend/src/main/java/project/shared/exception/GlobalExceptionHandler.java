@@ -21,15 +21,20 @@ public class GlobalExceptionHandler {
 
     // Exception bắt bằng AppException
     @ExceptionHandler(AppException.class)
-    public ApiResponse<Void> handlingAppException(AppException ex){
+    public ResponseEntity<ApiResponse<Void>> handlingAppException(AppException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         HttpStatus status = errorCode.getStatusCode();
 
-        return ApiResponse.failed(
+        ApiResponse<Void> apiResponse = ApiResponse.failed(
                 status.value(),
                 errorCode.getMessage()
         );
+
+        return ResponseEntity
+                .status(status)
+                .body(apiResponse);
     }
+
     // Bắt lỗi validation request body
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

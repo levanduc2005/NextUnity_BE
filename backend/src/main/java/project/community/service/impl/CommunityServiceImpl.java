@@ -57,10 +57,11 @@ public class CommunityServiceImpl implements CommunityService {
 
         return communityMapper.toResponse(savedCommunity);
     }
+
     @Override
     @Transactional(readOnly = true)
-    public CommunityResponse getCommunityById(UUID id) {
-        Community community = communityRepository.findById(id)
+    public CommunityResponse getCommunityById(UUID communityId) {
+        Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
         return communityMapper.toResponse(community);
     }
@@ -74,27 +75,81 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public CommunityResponse updateCommunity(UUID id, UpdateCommunityRequest requestl) {
-        return null;
+    @Transactional
+    public CommunityResponse updateCommunity(UUID communityId, UpdateCommunityRequest requestl) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
+        // Kiểm tra xem người dùng hiện tại có phải là creator của cộng đồng không
+        if(!community.getCreator().getId().equals(currentUserId)) {
+            throw new AppException(ErrorCode.NOT_COMMUNITY_CREATOR);
+        }
+        communityMapper.updateCommunity(requestl, community);
+
+        return communityMapper.toResponse(community);
     }
 
     @Override
-    public void deleteCommunity(UUID id) {
-
+    @Transactional
+    public void deleteCommunity(UUID communityId) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
+        // Kiểm tra xem người dùng hiện tại có phải là creator của cộng đồng không
+        if(!community.getCreator().getId().equals(currentUserId)) {
+            throw new AppException(ErrorCode.NOT_COMMUNITY_CREATOR);
+        }
+        communityRepository.delete(community);
     }
 
     @Override
-    public void joinCommunity(UUID id) {
+    @Transactional
+    public void joinCommunity(UUID communityId) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        User user = userService.getUserById(currentUserId);
 
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
+        // Kiểm tra xem người dùng đã tham gia cộng đồng chưa
+        if(communityMemberRepository.existsByCommunity_IdAndUser_Id(community.getId(), currentUserId)) {
+            throw new AppException(ErrorCode.ALREADY_JOINED_COMMUNITY);
+        }
+        // Tạo CommunityMember cho user với vai trò MEMBER
+        CommunityMember member = new CommunityMember();
+        member.setCommunity(community);
+        member.setUser(user);
+        member.setRole(CommunityRole.MEMBER);
+
+        communityMemberRepository.save(member);
     }
 
     @Override
-    public void leaveCommunity(UUID id) {
+    @Transactional
+    public void leaveCommunity(UUID communityId) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        User user = userService.getUserById(currentUserId);
 
+        Community community = communityRepository.findById(communityId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
+        // Người tạo cộng đồng không thể rời khỏi cộng đồng
+        if(community.getCreator().getId().equals(currentUserId)) {
+            throw new AppException(ErrorCode.CANNOT_LEAVE_AS_CREATOR);
+        }
+        CommunityMember member = communityMemberRepository
+                .findByCommunity_IdAndUser_Id(community.getId(), currentUserId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_A_MEMBER));
+
+        communityMemberRepository.delete(member);
     }
 
     @Override
-    public List<CommunityMemberResponse> getCommunityMembers(UUID id) {
-        return List.of();
+    @Transactional(readOnly = true)
+    public List<CommunityMemberResponse> getCommunityMembers(UUID communityId) {
+        if(!communityRepository.existsById(communityId)) {
+            throw new AppException(ErrorCode.COMMUNITY_NOT_FOUND);
+        }
+        return communityMemberRepository.findByCommunity_Id(communityId).stream()
+                .map(communityMapper::toMemberResponse)
+                .toList();
     }
 }

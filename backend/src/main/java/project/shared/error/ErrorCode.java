@@ -29,7 +29,17 @@ public enum ErrorCode {
     CANNOT_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể gửi email"),
     // Community
     COMMUNITY_NAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Tên cộng đồng đã tồn tại"),
-    COMMUNITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Cộng đồng không tồn tại");
+    NOT_COMMUNITY_CREATOR(HttpStatus.FORBIDDEN, "Bạn không phải là người tạo cộng đồng"),
+    COMMUNITY_NOT_FOUND(HttpStatus.NOT_FOUND, "Cộng đồng không tồn tại"),
+    ALREADY_JOINED_COMMUNITY(HttpStatus.BAD_REQUEST, "Bạn đã tham gia cộng đồng này"),
+    CANNOT_LEAVE_AS_CREATOR(HttpStatus.BAD_REQUEST, "Người tạo cộng đồng không thể rời khỏi cộng đồng"),
+    NOT_A_MEMBER(HttpStatus.BAD_REQUEST, "Bạn không phải là thành viên của cộng đồng này"),
+    // Post
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài viết không tồn tại"),
+    NOT_POST_AUTHOR(HttpStatus.FORBIDDEN, "Bạn không phải là tác giả của bài viết này"),
+    // Comment
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Bình luận không tồn tại"),
+    NOT_COMMENT_AUTHOR(HttpStatus.FORBIDDEN, "Bạn không phải là tác giả của bình luận này");
 
     private final HttpStatus statusCode;
     private final String message;

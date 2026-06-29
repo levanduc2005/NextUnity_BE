@@ -3,7 +3,7 @@ package project.community.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import project.community.entity.enums.VoteType;
+import project.community.entity.enums.ReactionType;
 import project.shared.common.BaseEntity;
 import project.user.entity.User;
 
@@ -15,11 +15,11 @@ import project.user.entity.User;
         })
 @Getter
 @Setter
-public class Vote extends BaseEntity {
+public class Reaction extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "vote_type", nullable = false)
-    private VoteType voteType;
+    private ReactionType reactionType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

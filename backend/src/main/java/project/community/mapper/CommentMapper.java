@@ -1,0 +1,34 @@
+package project.community.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import project.community.dto.comment.request.CreateCommentRequest;
+import project.community.dto.comment.request.UpdateCommentRequest;
+import project.community.dto.comment.response.CommentResponse;
+import project.community.entity.Comment;
+import project.community.entity.enums.ReactionType;
+
+@Mapper(componentModel = "spring")
+public interface CommentMapper {
+
+    Comment toEntity(CreateCommentRequest request);
+
+    void updateComment(UpdateCommentRequest request, @MappingTarget Comment comment);
+
+    @Mapping(target = "postId", source = "post.id")
+    @Mapping(target = "authorId", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getId() : null)")
+    @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getUsername() : \"[deleted]\")")
+    @Mapping(target = "content", expression = "java(comment.getDeletedAt() == null ? comment.getContent() : \"[bình luận đã bị xóa]\")")
+    @Mapping(target = "parentId", source = "parent.id")
+    @Mapping(target = "voteCount", expression = "java(calculateVotes(comment))")
+    @Mapping(target = "replies", ignore = true)
+    CommentResponse toResponse(Comment comment);
+
+    default long calculateVotes(Comment comment) {
+        if (comment.getReactions() == null) return 0;
+        return comment.getReactions().stream()
+                .mapToLong(vote -> vote.getReactionType() == ReactionType.UPVOTE ? 1 : -1)
+                .sum();
+    }
+}
