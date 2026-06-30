@@ -8,7 +8,7 @@ import project.shared.common.BaseEntity;
 import project.user.entity.User;
 
 @Entity
-@Table(name = "votes",
+@Table(name = "reactions",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"user_id", "post_id"}),
                 @UniqueConstraint(columnNames = {"user_id", "comment_id"})
@@ -18,7 +18,7 @@ import project.user.entity.User;
 public class Reaction extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "vote_type", nullable = false)
+    @Column(nullable = false)
     private ReactionType reactionType;
 
     @ManyToOne(fetch = FetchType.LAZY)

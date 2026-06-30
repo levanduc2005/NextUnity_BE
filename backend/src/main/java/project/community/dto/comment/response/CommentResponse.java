@@ -12,7 +12,7 @@ public record CommentResponse(
         String authorName,
         String content,
         UUID parentId,
-        long voteCount,
+        long reactionCount,
         List<CommentResponse> replies,
         Instant createdAt,
         Instant updatedAt

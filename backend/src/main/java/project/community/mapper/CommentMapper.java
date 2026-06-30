@@ -21,14 +21,7 @@ public interface CommentMapper {
     @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getUsername() : \"[deleted]\")")
     @Mapping(target = "content", expression = "java(comment.getDeletedAt() == null ? comment.getContent() : \"[bình luận đã bị xóa]\")")
     @Mapping(target = "parentId", source = "parent.id")
-    @Mapping(target = "voteCount", expression = "java(calculateVotes(comment))")
+    @Mapping(target = "reactionCount", expression = "java(comment.getReactions() != null ? comment.getReactions().size() : 0)")
     @Mapping(target = "replies", ignore = true)
     CommentResponse toResponse(Comment comment);
-
-    default long calculateVotes(Comment comment) {
-        if (comment.getReactions() == null) return 0;
-        return comment.getReactions().stream()
-                .mapToLong(vote -> vote.getReactionType() == ReactionType.UPVOTE ? 1 : -1)
-                .sum();
-    }
 }

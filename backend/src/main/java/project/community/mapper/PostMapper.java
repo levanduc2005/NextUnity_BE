@@ -24,19 +24,12 @@ public interface PostMapper {
     @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "authorName", source = "author.username")
     @Mapping(target = "tags", expression = "java(mapTags(post.getTags()))")
-    @Mapping(target = "voteCount", expression = "java(calculateVotes(post))")
+    @Mapping(target = "reactionCount", expression = "java(post.getReactions() != null ? post.getReactions().size() : 0)")
     @Mapping(target = "commentCount", expression = "java(post.getComments() != null ? post.getComments().size() : 0)")
     PostResponse toResponse(Post post);
 
     default Set<String> mapTags(Set<Tag> tags) {
         if (tags == null) return Set.of();
         return tags.stream().map(Tag::getName).collect(Collectors.toSet());
-    }
-
-    default long calculateVotes(Post post) {
-        if (post.getReactions() == null) return 0;
-        return post.getReactions().stream()
-                .mapToLong(vote -> vote.getReactionType() == ReactionType.UPVOTE ? 1 : -1)
-                .sum();
     }
 }

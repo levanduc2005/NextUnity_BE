@@ -13,7 +13,7 @@ public record PostResponse(
         String title,
         String content,
         Set<String> tags,
-        long voteCount,
+        long reactionCount,
         long commentCount,
         Instant createdAt,
         Instant updatedAt
