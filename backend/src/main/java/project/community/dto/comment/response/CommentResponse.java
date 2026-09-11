@@ -10,6 +10,7 @@ public record CommentResponse(
         UUID postId,
         UUID authorId,
         String authorName,
+        String authorAvatar,
         String content,
         UUID parentId,
         long reactionCount,

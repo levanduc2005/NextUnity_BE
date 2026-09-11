@@ -81,7 +81,7 @@ public class CommunityServiceImpl implements CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
         // Kiểm tra xem người dùng hiện tại có phải là creator của cộng đồng không
-        if(!community.getCreator().getId().equals(currentUserId)) {
+        if (!community.getCreator().getId().equals(currentUserId)) {
             throw new AppException(ErrorCode.NOT_COMMUNITY_CREATOR);
         }
         communityMapper.updateCommunity(requestl, community);
@@ -96,7 +96,7 @@ public class CommunityServiceImpl implements CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
         // Kiểm tra xem người dùng hiện tại có phải là creator của cộng đồng không
-        if(!community.getCreator().getId().equals(currentUserId)) {
+        if (!community.getCreator().getId().equals(currentUserId)) {
             throw new AppException(ErrorCode.NOT_COMMUNITY_CREATOR);
         }
         communityRepository.delete(community);
@@ -111,7 +111,7 @@ public class CommunityServiceImpl implements CommunityService {
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
         // Kiểm tra xem người dùng đã tham gia cộng đồng chưa
-        if(communityMemberRepository.existsByCommunity_IdAndUser_Id(community.getId(), currentUserId)) {
+        if (communityMemberRepository.existsByCommunity_IdAndUser_Id(community.getId(), currentUserId)) {
             throw new AppException(ErrorCode.ALREADY_JOINED_COMMUNITY);
         }
         // Tạo CommunityMember cho user với vai trò MEMBER
@@ -127,13 +127,12 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional
     public void leaveCommunity(UUID communityId) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        User user = userService.getUserById(currentUserId);
 
         Community community = communityRepository.findById(communityId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMUNITY_NOT_FOUND));
         // Người tạo cộng đồng không thể rời khỏi cộng đồng
         if(community.getCreator().getId().equals(currentUserId)) {
-            throw new AppException(ErrorCode.CANNOT_LEAVE_AS_CREATOR);
+             throw new AppException(ErrorCode.CANNOT_LEAVE_AS_CREATOR);
         }
         CommunityMember member = communityMemberRepository
                 .findByCommunity_IdAndUser_Id(community.getId(), currentUserId)
@@ -146,7 +145,7 @@ public class CommunityServiceImpl implements CommunityService {
     @Transactional(readOnly = true)
     public List<CommunityMemberResponse> getCommunityMembers(UUID communityId) {
         if(!communityRepository.existsById(communityId)) {
-            throw new AppException(ErrorCode.COMMUNITY_NOT_FOUND);
+             throw new AppException(ErrorCode.COMMUNITY_NOT_FOUND);
         }
         return communityMemberRepository.findByCommunity_Id(communityId).stream()
                 .map(communityMapper::toMemberResponse)

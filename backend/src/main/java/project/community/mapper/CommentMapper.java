@@ -18,7 +18,8 @@ public interface CommentMapper {
 
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "authorId", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getId() : null)")
-    @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getUsername() : \"[deleted]\")")
+    @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? (comment.getAuthor().getName() != null && !comment.getAuthor().getName().isBlank() ? comment.getAuthor().getName() : comment.getAuthor().getUsername()) : \"[deleted]\")")
+    @Mapping(target = "authorAvatar", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? comment.getAuthor().getAvatarUrl() : null)")
     @Mapping(target = "content", expression = "java(comment.getDeletedAt() == null ? comment.getContent() : \"[bình luận đã bị xóa]\")")
     @Mapping(target = "parentId", source = "parent.id")
     @Mapping(target = "reactionCount", expression = "java(comment.getReactions() != null ? comment.getReactions().size() : 0)")

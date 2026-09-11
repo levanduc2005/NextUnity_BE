@@ -10,6 +10,8 @@ public record PostResponse(
         String communityName,
         UUID authorId,
         String authorName,
+        String authorAvatar,
+        String authorUniversity,
         String title,
         String content,
         Set<String> tags,

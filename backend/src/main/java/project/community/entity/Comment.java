@@ -3,6 +3,7 @@ package project.community.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 import project.shared.common.SoftDeleteEntity;
 import project.user.entity.User;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Table(name = "comments")
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE comments SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 public class Comment extends SoftDeleteEntity {
 
     @Column(nullable = false, columnDefinition = "TEXT")

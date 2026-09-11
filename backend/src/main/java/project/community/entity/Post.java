@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import project.shared.common.SoftDeleteEntity;
 import project.user.entity.User;
 
@@ -16,7 +15,6 @@ import java.util.Set;
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 public class Post extends SoftDeleteEntity {
 
     @Column(nullable = false)

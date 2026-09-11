@@ -99,7 +99,8 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException(ErrorCode.INVALID_OTP);
         }
         // 4. create user (USER MODULE)
-        Role userRole = roleRepository.findByName("USER")
+        Role userRole = roleRepository.findByName("STUDENT")
+                .or(() -> roleRepository.findByName("USER"))
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
         User user = new User();
         user.setEmail(cache.email());

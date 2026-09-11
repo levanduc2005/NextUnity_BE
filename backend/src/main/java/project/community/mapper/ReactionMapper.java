@@ -34,6 +34,6 @@ public interface ReactionMapper {
             return Map.of();
         }
         return reactions.stream()
-                .collect(Collectors.groupingBy(Reaction::getReactionType, Collectors.counting()));
+                .collect(Collectors.groupingBy(reaction -> reaction.getReactionType(), Collectors.counting()));
     }
 }
