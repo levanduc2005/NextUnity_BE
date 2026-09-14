@@ -39,7 +39,13 @@ public enum ErrorCode {
     NOT_POST_AUTHOR(HttpStatus.FORBIDDEN, "Bạn không phải là tác giả của bài viết này"),
     // Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Bình luận không tồn tại"),
-    NOT_COMMENT_AUTHOR(HttpStatus.FORBIDDEN, "Bạn không phải là tác giả của bình luận này");
+    NOT_COMMENT_AUTHOR(HttpStatus.FORBIDDEN, "Bạn không phải là tác giả của bình luận này"),
+    // Course
+    COURSE_NOT_FOUND(HttpStatus.NOT_FOUND, "Khóa học không tồn tại"),
+    NOT_COURSE_CREATOR(HttpStatus.FORBIDDEN, "Bạn không phải là người tạo khóa học này"),
+    // Module & Lesson
+    MODULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Chương học không tồn tại"),
+    LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài học không tồn tại");
 
     private final HttpStatus statusCode;
     private final String message;
