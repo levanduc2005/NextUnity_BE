@@ -15,9 +15,9 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
 
     @Query("""
         SELECT c FROM Course c WHERE
-        (:category IS NULL OR LOWER(c.category) = LOWER(:category)) AND
+        (CAST(:category AS string) IS NULL OR LOWER(c.category) = LOWER(CAST(:category AS string))) AND
         (:difficulty IS NULL OR c.difficulty = :difficulty) AND
-        (:search IS NULL OR LOWER(c.title) LIKE LOWER(CONCAT('%', :search, '%')))
+        (CAST(:search AS string) IS NULL OR LOWER(c.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
     """)
     Page<Course> searchCourses(
             @Param("category") String category,

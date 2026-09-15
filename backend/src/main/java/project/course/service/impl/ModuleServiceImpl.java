@@ -72,7 +72,10 @@ public class ModuleServiceImpl implements ModuleService {
 
     private void checkCourseCreator(Course course) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        if (!course.getCreator().getId().equals(currentUserId)) {
+        boolean isCreator = course.getCreator().getId().equals(currentUserId);
+        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
+        // Nếu không phải người tạo VÀ cũng không phải Admin thì chặn
+        if (!isCreator && !isAdmin) {
             throw new AppException(ErrorCode.NOT_COURSE_CREATOR);
         }
     }

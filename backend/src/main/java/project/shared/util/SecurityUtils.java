@@ -5,12 +5,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import project.auth.security.CustomUserDetails;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
-
 import java.util.UUID;
 
 public class SecurityUtils {
 
-    private SecurityUtils() {}
+    private SecurityUtils() {
+    }
 
     public static CustomUserDetails getCurrentUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -26,5 +26,16 @@ public class SecurityUtils {
 
     public static UUID getCurrentUserId() {
         return getCurrentUserDetails().getUserId();
+    }
+
+    public static boolean isCurrentUserAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null &&
+                authentication.isAuthenticated() &&
+                authentication.getPrincipal() instanceof CustomUserDetails user) {
+            return user.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        }
+        return false;
     }
 }

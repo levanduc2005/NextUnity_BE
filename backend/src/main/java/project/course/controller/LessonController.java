@@ -8,6 +8,7 @@ import project.course.dto.lesson.request.UpdateLessonRequest;
 import project.course.dto.lesson.response.LessonDetailResponse;
 import project.course.service.LessonService;
 import project.shared.response.ApiResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class LessonController {
     private final LessonService lessonService;
 
     @PostMapping("/api/modules/{moduleId}/lessons")
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
     public ApiResponse<LessonDetailResponse> createLesson(
             @PathVariable UUID moduleId,
             @Valid @RequestBody CreateLessonRequest request

@@ -9,9 +9,11 @@ import project.course.dto.course.request.UpdateCourseRequest;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
 import project.course.entity.Course;
+import project.course.entity.Enrollment;
 import project.course.entity.enums.CourseDifficulty;
 import project.course.mapper.CourseMapper;
 import project.course.repository.CourseRepository;
+import project.course.repository.EnrollmentRepository;
 import project.course.service.CourseService;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
@@ -20,6 +22,7 @@ import project.user.entity.User;
 import project.user.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,6 +32,7 @@ public class CourseServiceImpl implements CourseService {
     private final UserService userService;
 
     private final CourseRepository courseRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     private final CourseMapper courseMapper;
 
@@ -48,7 +52,13 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
-        return courseMapper.toDetailResponse(course);
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        Optional<Enrollment> enrollmentOpt = enrollmentRepository.findByUserIdAndCourseId(currentUserId, id);
+
+        boolean enrolled = enrollmentOpt.isPresent();
+        int myProgress = enrollmentOpt.map(Enrollment::getProgressPercent).orElse(0);
+
+        return courseMapper.toDetailResponse(course, enrolled, myProgress);
     }
 
     @Override
@@ -91,7 +101,10 @@ public class CourseServiceImpl implements CourseService {
 
     private void checkCourseCreator(Course course) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        if (!course.getCreator().getId().equals(currentUserId)) {
+        boolean isCreator = course.getCreator().getId().equals(currentUserId);
+        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
+        // Nếu không phải người tạo VÀ cũng không phải Admin thì chặn
+        if (!isCreator && !isAdmin) {
             throw new AppException(ErrorCode.NOT_COURSE_CREATOR);
         }
     }

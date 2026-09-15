@@ -18,5 +18,7 @@ public record CourseDetailResponse(
         UUID creatorId,
         String creatorName,
         Instant createdAt,
+        Boolean isEnrolled,
+        Integer myProgressPercent,
         List<ModuleResponse> modules
 ) {}

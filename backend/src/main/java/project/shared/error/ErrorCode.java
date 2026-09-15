@@ -45,7 +45,11 @@ public enum ErrorCode {
     NOT_COURSE_CREATOR(HttpStatus.FORBIDDEN, "Bạn không phải là người tạo khóa học này"),
     // Module & Lesson
     MODULE_NOT_FOUND(HttpStatus.NOT_FOUND, "Chương học không tồn tại"),
-    LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài học không tồn tại");
+    LESSON_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài học không tồn tại"),
+    // Enrollment & Progress
+    ALREADY_ENROLLED(HttpStatus.BAD_REQUEST, "Bạn đã đăng ký khóa học này rồi"),
+    ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy thông tin đăng ký khóa học"),
+    NOT_ENROLLED(HttpStatus.FORBIDDEN, "Bạn chưa đăng ký khóa học này");
 
     private final HttpStatus statusCode;
     private final String message;

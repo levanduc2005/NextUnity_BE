@@ -11,6 +11,7 @@ import project.course.entity.Lesson;
 import project.course.entity.Module;
 import project.course.mapper.LessonMapper;
 import project.course.repository.CourseRepository;
+import project.course.repository.EnrollmentRepository;
 import project.course.repository.LessonRepository;
 import project.course.repository.ModuleRepository;
 import project.course.service.LessonService;
@@ -27,6 +28,7 @@ public class LessonServiceImpl implements LessonService {
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
     private final ModuleRepository moduleRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     private final LessonMapper lessonMapper;
 
@@ -54,6 +56,17 @@ public class LessonServiceImpl implements LessonService {
     public LessonDetailResponse getLessonById(UUID lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        Course course = lesson.getCourse();
+
+        boolean isCreator = course.getCreator().getId().equals(currentUserId);
+        if(!isCreator){
+            boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(currentUserId, course.getId());
+            if(!isEnrolled){
+                throw new AppException(ErrorCode.NOT_ENROLLED);
+            }
+        }
 
         return lessonMapper.toDetailResponse(lesson);
     }
@@ -88,7 +101,10 @@ public class LessonServiceImpl implements LessonService {
 
     private void checkCourseCreator(Course course) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        if (!course.getCreator().getId().equals(currentUserId)) {
+        boolean isCreator = course.getCreator().getId().equals(currentUserId);
+        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
+        // Nếu không phải người tạo VÀ cũng không phải Admin thì chặn
+        if (!isCreator && !isAdmin) {
             throw new AppException(ErrorCode.NOT_COURSE_CREATOR);
         }
     }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import project.shared.common.SoftDeleteEntity;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE modules SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Module extends SoftDeleteEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,5 +36,6 @@ public class Module extends SoftDeleteEntity {
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
+    @SQLRestriction("deleted_at IS NULL")
     private List<Lesson> lessons = new ArrayList<>();
 }

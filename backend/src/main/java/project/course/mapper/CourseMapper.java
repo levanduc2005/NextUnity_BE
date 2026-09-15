@@ -20,7 +20,15 @@ public interface CourseMapper {
 
     @Mapping(target = "creatorId", source = "creator.id")
     @Mapping(target = "creatorName", source = "creator.name")
+    @Mapping(target = "isEnrolled", constant = "false")
+    @Mapping(target = "myProgressPercent", ignore = true)
     CourseDetailResponse toDetailResponse(Course course);
+
+    @Mapping(target = "creatorId", source = "course.creator.id")
+    @Mapping(target = "creatorName", source = "course.creator.name")
+    @Mapping(target = "isEnrolled", source = "isEnrolled")
+    @Mapping(target = "myProgressPercent", source = "myProgressPercent")
+    CourseDetailResponse toDetailResponse(Course course, Boolean isEnrolled, Integer myProgressPercent);
 
     void updateEntity(UpdateCourseRequest request, @MappingTarget Course course);
 }

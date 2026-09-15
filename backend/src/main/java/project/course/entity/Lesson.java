@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import project.course.entity.enums.LessonType;
 import project.shared.common.SoftDeleteEntity;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE lessons SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Lesson extends SoftDeleteEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,6 +2,7 @@ package project.course.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import project.course.dto.module.request.CreateModuleRequest;
 import project.course.dto.module.request.UpdateModuleRequest;
@@ -18,6 +19,7 @@ public class ModuleController {
     private final ModuleService moduleService;
 
     @PostMapping("/api/courses/{courseId}/modules")
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
     public ApiResponse<ModuleResponse> createModule(
             @PathVariable UUID courseId,
             @Valid @RequestBody CreateModuleRequest request
