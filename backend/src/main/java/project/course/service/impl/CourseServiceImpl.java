@@ -15,6 +15,7 @@ import project.course.mapper.CourseMapper;
 import project.course.repository.CourseRepository;
 import project.course.repository.EnrollmentRepository;
 import project.course.service.CourseService;
+import project.course.validator.CourseAccessValidator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
 import project.shared.util.SecurityUtils;
@@ -35,6 +36,8 @@ public class CourseServiceImpl implements CourseService {
     private final EnrollmentRepository enrollmentRepository;
 
     private final CourseMapper courseMapper;
+
+    private final CourseAccessValidator courseAccessValidator;
 
     @Override
     public CourseSummaryResponse createCourse(CreateCourseRequest request) {
@@ -83,7 +86,7 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
-        checkCourseCreator(course);
+        courseAccessValidator.validateCreatorOrAdmin(course);
 
         courseMapper.updateEntity(request, course);
         return courseMapper.toSummaryResponse(courseRepository.save(course));
@@ -94,18 +97,8 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
-        checkCourseCreator(course);
+        courseAccessValidator.validateCreatorOrAdmin(course);
 
         courseRepository.delete(course);
-    }
-
-    private void checkCourseCreator(Course course) {
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        boolean isCreator = course.getCreator().getId().equals(currentUserId);
-        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
-        // Nếu không phải người tạo VÀ cũng không phải Admin thì chặn
-        if (!isCreator && !isAdmin) {
-            throw new AppException(ErrorCode.NOT_COURSE_CREATOR);
-        }
     }
 }

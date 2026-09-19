@@ -29,10 +29,7 @@ public class SlideUpload extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SlideStatus status = SlideStatus.APPROVED;
-
-    @Column(nullable = false)
-    private Boolean isOfficial = false;
+    private SlideStatus status = SlideStatus.PRIVATE;
 
     private String rejectionReason;
 }

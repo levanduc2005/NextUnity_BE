@@ -49,7 +49,16 @@ public enum ErrorCode {
     // Enrollment & Progress
     ALREADY_ENROLLED(HttpStatus.BAD_REQUEST, "Bạn đã đăng ký khóa học này rồi"),
     ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy thông tin đăng ký khóa học"),
-    NOT_ENROLLED(HttpStatus.FORBIDDEN, "Bạn chưa đăng ký khóa học này");
+    NOT_ENROLLED(HttpStatus.FORBIDDEN, "Bạn chưa đăng ký khóa học này"),
+    // Flashcard
+    FLASHCARD_NOT_FOUND(HttpStatus.NOT_FOUND, "Flashcard không tồn tại"),
+    INVALID_FLASHCARD_REORDER(HttpStatus.BAD_REQUEST, "Danh sách sắp xếp flashcard không hợp lệ"),
+    // Mindmap
+    MINDMAP_NOT_FOUND(HttpStatus.NOT_FOUND, "Sơ đồ tư duy không tồn tại"),
+    // Slide
+    SLIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "Slide hoặc tài liệu không tồn tại"),
+    NOT_SLIDE_UPLOADER(HttpStatus.FORBIDDEN, "Bạn không phải là người tải lên tài liệu này"),
+    INVALID_SLIDE_ACTION(HttpStatus.BAD_REQUEST, "Thao tác trên slide không hợp lệ");
 
     private final HttpStatus statusCode;
     private final String message;

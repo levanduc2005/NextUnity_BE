@@ -11,13 +11,12 @@ import project.course.entity.Lesson;
 import project.course.entity.Module;
 import project.course.mapper.LessonMapper;
 import project.course.repository.CourseRepository;
-import project.course.repository.EnrollmentRepository;
 import project.course.repository.LessonRepository;
 import project.course.repository.ModuleRepository;
 import project.course.service.LessonService;
+import project.course.validator.CourseAccessValidator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
-import project.shared.util.SecurityUtils;
 
 import java.util.UUID;
 
@@ -28,9 +27,10 @@ public class LessonServiceImpl implements LessonService {
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
     private final ModuleRepository moduleRepository;
-    private final EnrollmentRepository enrollmentRepository;
 
     private final LessonMapper lessonMapper;
+
+    private final CourseAccessValidator courseAccessValidator;
 
     @Override
     @Transactional
@@ -39,7 +39,7 @@ public class LessonServiceImpl implements LessonService {
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
 
         Course course = module.getCourse();
-        checkCourseCreator(course);
+        courseAccessValidator.validateCreatorOrAdmin(course);
 
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setModule(module);
@@ -57,16 +57,7 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        Course course = lesson.getCourse();
-
-        boolean isCreator = course.getCreator().getId().equals(currentUserId);
-        if(!isCreator){
-            boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(currentUserId, course.getId());
-            if(!isEnrolled){
-                throw new AppException(ErrorCode.NOT_ENROLLED);
-            }
-        }
+        courseAccessValidator.validateAccess(lesson.getCourse());
 
         return lessonMapper.toDetailResponse(lesson);
     }
@@ -76,8 +67,7 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        Course course = lesson.getModule().getCourse();
-        checkCourseCreator(course);
+        courseAccessValidator.validateCreatorOrAdmin(lesson.getModule().getCourse());
 
         lessonMapper.updateEntity(request, lesson);
 
@@ -91,21 +81,11 @@ public class LessonServiceImpl implements LessonService {
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
         Course course = lesson.getModule().getCourse();
-        checkCourseCreator(course);
+        courseAccessValidator.validateCreatorOrAdmin(course);
 
         course.setTotalLessons(Math.max(0, course.getTotalLessons() - 1));
         courseRepository.save(course);
 
         lessonRepository.delete(lesson);
-    }
-
-    private void checkCourseCreator(Course course) {
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        boolean isCreator = course.getCreator().getId().equals(currentUserId);
-        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
-        // Nếu không phải người tạo VÀ cũng không phải Admin thì chặn
-        if (!isCreator && !isAdmin) {
-            throw new AppException(ErrorCode.NOT_COURSE_CREATOR);
-        }
     }
 }

@@ -11,6 +11,5 @@ import java.util.UUID;
 public interface SlideUploadRepository extends JpaRepository<SlideUpload, UUID> {
     List<SlideUpload> findByLessonId(UUID lessonId);
     List<SlideUpload> findByLessonIdAndStatus(UUID lessonId, SlideStatus status);
-    List<SlideUpload> findByLessonIdAndIsOfficialTrue(UUID lessonId);
     List<SlideUpload> findByUploaderId(UUID uploaderId);
 }

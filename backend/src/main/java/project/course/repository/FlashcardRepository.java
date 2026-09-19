@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface FlashcardRepository extends JpaRepository<Flashcard, UUID> {
     List<Flashcard> findByLessonIdOrderByOrderIndexAsc(UUID lessonId);
+
+    int countByLessonId(UUID lessonId);
 }
