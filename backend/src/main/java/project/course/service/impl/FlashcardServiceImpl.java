@@ -2,6 +2,7 @@ package project.course.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.course.dto.flashcard.request.CreateFlashcardRequest;
 import project.course.dto.flashcard.request.ReorderFlashcardsRequest;
 import project.course.dto.flashcard.request.UpdateFlashcardRequest;
@@ -54,10 +55,8 @@ public class FlashcardServiceImpl implements FlashcardService {
 
         Flashcard flashcard = flashcardMapper.toEntity(request);
         flashcard.setLesson(lesson);
-        if(flashcard.getOrderIndex() == null) {
-            int quantityFlashcards = flashcardRepository.countByLessonId(lessonId);
-            flashcard.setOrderIndex(quantityFlashcards + 1);
-        }
+        int quantityFlashcards = flashcardRepository.countByLessonId(lessonId);
+        flashcard.setOrderIndex(quantityFlashcards + 1);
 
         return flashcardMapper.toResponse(flashcardRepository.save(flashcard));
     }
@@ -103,12 +102,29 @@ public class FlashcardServiceImpl implements FlashcardService {
     }
 
     @Override
+    @Transactional
     public void deleteFlashcard(UUID id) {
         Flashcard flashcard = flashcardRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
 
         courseAccessValidator.validateCreatorOrAdmin(flashcard.getLesson().getCourse());
 
+        int deletedOrderIndex = flashcard.getOrderIndex();
         flashcardRepository.delete(flashcard);
+
+        UUID lessonId = flashcard.getLesson().getId();
+        List<Flashcard> cardToShifts = flashcardRepository.findByLessonIdOrderByOrderIndexAsc(lessonId)
+                .stream()
+                .filter(f -> !f.getId().equals(flashcard.getId())
+                        && f.getOrderIndex() > deletedOrderIndex)
+                .toList();
+
+        for(Flashcard cardToShift : cardToShifts) {
+            cardToShift.setOrderIndex(cardToShift.getOrderIndex() - 1);
+        }
+
+        if(!cardToShifts.isEmpty()) {
+            flashcardRepository.saveAll(cardToShifts);
+        }
     }
 }
