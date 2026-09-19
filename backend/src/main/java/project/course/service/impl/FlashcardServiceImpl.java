@@ -89,7 +89,7 @@ public class FlashcardServiceImpl implements FlashcardService {
         Map<UUID, Flashcard> flashcardMap = flashcards.stream()
                 .collect(Collectors.toMap(Flashcard::getId, flashcard -> flashcard));
 
-        for(int i = 0; i < request.flashcardIds().size(); i++) {
+        for (int i = 0; i < request.flashcardIds().size(); i++) {
             UUID flashcardId = request.flashcardIds().get(i);
             Flashcard flashcard = flashcardMap.get(flashcardId);
             if (flashcard == null) {
@@ -119,11 +119,11 @@ public class FlashcardServiceImpl implements FlashcardService {
                         && f.getOrderIndex() > deletedOrderIndex)
                 .toList();
 
-        for(Flashcard cardToShift : cardToShifts) {
+        for (Flashcard cardToShift : cardToShifts) {
             cardToShift.setOrderIndex(cardToShift.getOrderIndex() - 1);
         }
 
-        if(!cardToShifts.isEmpty()) {
+        if (!cardToShifts.isEmpty()) {
             flashcardRepository.saveAll(cardToShifts);
         }
     }
