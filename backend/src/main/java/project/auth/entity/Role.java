@@ -19,7 +19,7 @@ import project.shared.common.SoftDeleteEntity;
 """)
 public class Role extends SoftDeleteEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;

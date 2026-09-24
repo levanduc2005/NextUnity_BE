@@ -6,13 +6,19 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import project.course.entity.enums.LessonType;
+import project.quiz.entity.Quiz;
 import project.shared.common.SoftDeleteEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "lessons")
+@Table(
+        name = "lessons",
+        indexes = {
+                @Index(name = "idx_lessons_module_id", columnList = "module_id")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE lessons SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
@@ -50,6 +56,9 @@ public class Lesson extends SoftDeleteEntity {
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LessonProgress> progresses = new ArrayList<>();
+
+    @OneToOne(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Quiz quiz;
 
     public Course getCourse() {
         return module != null ? module.getCourse() : null;

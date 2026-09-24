@@ -11,7 +11,13 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "posts")
+@Table(
+        name = "posts",
+        indexes = {
+                @Index(name = "idx_posts_community_id", columnList = "community_id"),
+                @Index(name = "idx_posts_author_id", columnList = "author_id")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")

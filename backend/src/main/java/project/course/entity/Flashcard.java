@@ -6,7 +6,12 @@ import lombok.Setter;
 import project.shared.common.BaseEntity;
 
 @Entity
-@Table(name = "flashcards")
+@Table(
+        name = "flashcards",
+        indexes = {
+                @Index(name = "idx_flashcards_lesson_id", columnList = "lesson_id")
+        }
+)
 @Getter
 @Setter
 public class Flashcard extends BaseEntity {

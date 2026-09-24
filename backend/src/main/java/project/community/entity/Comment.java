@@ -10,7 +10,14 @@ import project.user.entity.User;
 import java.util.List;
 
 @Entity
-@Table(name = "comments")
+@Table(
+        name = "comments",
+        indexes = {
+                @Index(name = "idx_comments_post_id", columnList = "post_id"),
+                @Index(name = "idx_comments_parent_id", columnList = "parent_id"),
+                @Index(name = "idx_comments_author_id", columnList = "author_id")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE comments SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")

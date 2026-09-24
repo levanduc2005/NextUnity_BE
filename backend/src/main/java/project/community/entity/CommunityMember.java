@@ -8,8 +8,13 @@ import project.shared.common.BaseEntity;
 import project.user.entity.User;
 
 @Entity
-@Table(name = "community_members",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"community_id", "user_id"}))
+@Table(
+        name = "community_members",
+        uniqueConstraints = @UniqueConstraint(name = "uq_community_members_community_user", columnNames = {"community_id", "user_id"}),
+        indexes = {
+                @Index(name = "idx_community_members_user_id", columnList = "user_id")
+        }
+)
 @Getter
 @Setter
 public class CommunityMember extends BaseEntity {

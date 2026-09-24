@@ -10,8 +10,13 @@ import project.user.entity.User;
 import java.time.Instant;
 
 @Entity
-@Table(name = "lesson_progress",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "lesson_id"}))
+@Table(
+        name = "lesson_progress",
+        uniqueConstraints = @UniqueConstraint(name = "uq_lesson_progress_user_lesson", columnNames = {"user_id", "lesson_id"}),
+        indexes = {
+                @Index(name = "idx_lesson_progress_lesson_id", columnList = "lesson_id")
+        }
+)
 @Getter
 @Setter
 public class LessonProgress extends BaseEntity {

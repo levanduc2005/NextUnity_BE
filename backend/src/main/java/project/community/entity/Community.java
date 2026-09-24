@@ -10,7 +10,12 @@ import project.user.entity.User;
 import java.util.List;
 
 @Entity
-@Table(name = "communities")
+@Table(
+        name = "communities",
+        indexes = {
+                @Index(name = "idx_communities_creator_id", columnList = "creator_id")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE communities SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")

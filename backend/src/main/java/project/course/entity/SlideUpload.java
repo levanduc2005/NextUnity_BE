@@ -8,7 +8,13 @@ import project.shared.common.BaseEntity;
 import project.user.entity.User;
 
 @Entity
-@Table(name = "slide_uploads")
+@Table(
+        name = "slide_uploads",
+        indexes = {
+                @Index(name = "idx_slide_uploads_lesson_id", columnList = "lesson_id"),
+                @Index(name = "idx_slide_uploads_uploader_id", columnList = "uploader_id")
+        }
+)
 @Getter
 @Setter
 public class SlideUpload extends BaseEntity {

@@ -8,11 +8,17 @@ import project.shared.common.BaseEntity;
 import project.user.entity.User;
 
 @Entity
-@Table(name = "reactions",
+@Table(
+        name = "reactions",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"user_id", "post_id"}),
-                @UniqueConstraint(columnNames = {"user_id", "comment_id"})
-        })
+                @UniqueConstraint(name = "uq_reactions_user_post", columnNames = {"user_id", "post_id"}),
+                @UniqueConstraint(name = "uq_reactions_user_comment", columnNames = {"user_id", "comment_id"})
+        },
+        indexes = {
+                @Index(name = "idx_reactions_post_id", columnList = "post_id"),
+                @Index(name = "idx_reactions_comment_id", columnList = "comment_id")
+        }
+)
 @Getter
 @Setter
 public class Reaction extends BaseEntity {

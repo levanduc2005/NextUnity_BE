@@ -58,7 +58,13 @@ public enum ErrorCode {
     // Slide
     SLIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "Slide hoặc tài liệu không tồn tại"),
     NOT_SLIDE_UPLOADER(HttpStatus.FORBIDDEN, "Bạn không phải là người tải lên tài liệu này"),
-    INVALID_SLIDE_ACTION(HttpStatus.BAD_REQUEST, "Thao tác trên slide không hợp lệ");
+    INVALID_SLIDE_ACTION(HttpStatus.BAD_REQUEST, "Thao tác trên slide không hợp lệ"),
+    // Quiz & Question
+    QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài trắc nghiệm không tồn tại"),
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Câu hỏi không tồn tại"),
+    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Phương án trả lời không tồn tại"),
+    QUIZ_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Bài học này đã có bài trắc nghiệm"),
+    INVALID_QUIZ_SUBMISSION(HttpStatus.BAD_REQUEST, "Dữ liệu nộp bài trắc nghiệm không hợp lệ");
 
     private final HttpStatus statusCode;
     private final String message;

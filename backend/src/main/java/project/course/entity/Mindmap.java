@@ -6,7 +6,12 @@ import lombok.Setter;
 import project.shared.common.BaseEntity;
 
 @Entity
-@Table(name = "mindmaps")
+@Table(
+        name = "mindmaps",
+        indexes = {
+                @Index(name = "idx_mindmaps_lesson_id", columnList = "lesson_id")
+        }
+)
 @Getter
 @Setter
 public class Mindmap extends BaseEntity {

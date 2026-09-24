@@ -13,7 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "courses")
+@Table(
+        name = "courses",
+        indexes = {
+                @Index(name = "idx_courses_creator_id", columnList = "creator_id"),
+                @Index(name = "idx_courses_category", columnList = "category")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE courses SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")

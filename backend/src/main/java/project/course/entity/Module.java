@@ -11,7 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "modules")
+@Table(
+        name = "modules",
+        indexes = {
+                @Index(name = "idx_modules_course_id", columnList = "course_id")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = "UPDATE modules SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")

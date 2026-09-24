@@ -8,7 +8,12 @@ import project.auth.entity.Role;
 import project.shared.common.SoftDeleteEntity;
 
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_users_role_id", columnList = "role_id")
+        }
+)
 @Getter
 @Setter
 @SQLDelete(sql = """
@@ -18,8 +23,14 @@ import project.shared.common.SoftDeleteEntity;
 """)
 public class User extends SoftDeleteEntity {
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String passwordHash;
 
     private String university;
