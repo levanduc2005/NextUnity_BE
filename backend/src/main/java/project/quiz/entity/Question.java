@@ -32,7 +32,7 @@ public class Question extends BaseEntity {
     private QuestionType type = QuestionType.SINGLE_CHOICE;
 
     @Column(nullable = false)
-    private Integer points = 10;
+    private Double points = 10.0;
 
     @Column(nullable = false)
     private Integer orderIndex = 1;

@@ -5,11 +5,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
-public class RedisServiceImpl implements RedisService{
+public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -21,7 +20,8 @@ public class RedisServiceImpl implements RedisService{
     @Override
     public <T> T get(String key, Class<T> type) {
         Object value = redisTemplate.opsForValue().get(key);
-        if (value == null) return null;
+        if (value == null)
+            return null;
 
         return type.cast(value);
     }

@@ -65,4 +65,10 @@ public class CourseAccessValidator {
         boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
         return isCreator || isAdmin;
     }
+
+    public boolean isCreatorOrAdminByLessonId(UUID lessonId) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+        return isCreatorOrAdmin(lesson.getCourse());
+    }
 }

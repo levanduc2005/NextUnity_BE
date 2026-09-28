@@ -64,7 +64,13 @@ public enum ErrorCode {
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Câu hỏi không tồn tại"),
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Phương án trả lời không tồn tại"),
     QUIZ_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Bài học này đã có bài trắc nghiệm"),
-    INVALID_QUIZ_SUBMISSION(HttpStatus.BAD_REQUEST, "Dữ liệu nộp bài trắc nghiệm không hợp lệ");
+    INVALID_QUIZ_SUBMISSION(HttpStatus.BAD_REQUEST, "Dữ liệu nộp bài trắc nghiệm không hợp lệ"),
+    INVALID_QUESTION_REORDER(HttpStatus.BAD_REQUEST, "Danh sách sắp xếp câu hỏi không hợp lệ"),
+    INVALID_QUESTION_OPTION_COUNT(HttpStatus.BAD_REQUEST, "Số lượng phương án trả lời không hợp lệ"),
+    INVALID_OPTION_REORDER(HttpStatus.BAD_REQUEST, "Danh sách sắp xếp lựa chọn không hợp lệ"),
+    QUIZ_NOT_PUBLISHED(HttpStatus.BAD_REQUEST, "Bài trắc nghiệm chưa được xuất bản"),
+    QUIZ_CANNOT_PUBLISH_EMPTY(HttpStatus.BAD_REQUEST, "Không thể xuất bản bài trắc nghiệm chưa có câu hỏi nào"),
+    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài nộp trắc nghiệm không tồn tại");
 
     private final HttpStatus statusCode;
     private final String message;

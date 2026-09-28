@@ -29,10 +29,10 @@ public class QuizSubmission extends BaseEntity {
     private User user;
 
     @Column(nullable = false)
-    private Integer score = 0;
+    private Double score = 0.0;
 
     @Column(nullable = false)
-    private Integer totalPoints = 0;
+    private Double totalPoints = 0.0;
 
     @Column(nullable = false)
     private Boolean isPassed = false;

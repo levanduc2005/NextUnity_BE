@@ -12,5 +12,6 @@ import java.util.UUID;
 public interface QuizSubmissionRepository extends JpaRepository<QuizSubmission, UUID> {
     Optional<QuizSubmission> findTopByQuizIdAndUserIdOrderBySubmittedAtDesc(UUID quizId, UUID userId);
     List<QuizSubmission> findByQuizIdAndUserIdOrderBySubmittedAtDesc(UUID quizId, UUID userId);
+    List<QuizSubmission> findByQuizIdOrderBySubmittedAtDesc(UUID quizId);
     int countByQuizIdAndUserId(UUID quizId, UUID userId);
 }

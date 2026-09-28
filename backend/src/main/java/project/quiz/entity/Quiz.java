@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import project.course.entity.Lesson;
+import project.quiz.entity.enums.QuizStatus;
 import project.shared.common.BaseEntity;
 
 import java.util.ArrayList;
@@ -30,14 +31,13 @@ public class Quiz extends BaseEntity {
 
     private Integer durationMinutes;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private QuizStatus status = QuizStatus.DRAFT;
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
     private List<Question> questions = new ArrayList<>();
-
-    public void addQuestion(Question question) {
-        questions.add(question);
-        question.setQuiz(this);
-    }
 
     public void removeQuestion(Question question) {
         questions.remove(question);
