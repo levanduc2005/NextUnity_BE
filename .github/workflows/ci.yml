@@ -3,9 +3,6 @@ name: NextUnity Backend CI & SonarCloud
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 concurrency:
