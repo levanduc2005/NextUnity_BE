@@ -41,14 +41,14 @@ public class SlideUploadController {
     }
 
     @PutMapping("/api/slides/{id}/approve")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<SlideResponse> approveSlide(@PathVariable UUID id) {
         SlideResponse response = slideUploadService.approveSlide(id);
         return ApiResponse.success(response, "Phê duyệt tài liệu thành công");
     }
 
     @PutMapping("/api/slides/{id}/reject")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<SlideResponse> rejectSlide(
             @PathVariable UUID id,
             @Valid @RequestBody RejectSlideRequest request

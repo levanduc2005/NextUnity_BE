@@ -20,9 +20,9 @@ public interface QuizSubmissionService {
     List<QuizSubmissionSummaryResponse> getMySubmissions(UUID quizId);
 
     /**
-     * Giảng viên xem danh sách tất cả học viên đã nộp bài.
+     * Quản trị viên xem danh sách tất cả học viên đã nộp bài.
      */
-    List<QuizSubmissionSummaryResponse> getQuizSubmissionsForInstructor(UUID quizId);
+    List<QuizSubmissionSummaryResponse> getQuizSubmissionsForAdmin(UUID quizId);
 
     /**
      * Xem kết quả chi tiết từng câu hỏi của một lượt nộp bài.

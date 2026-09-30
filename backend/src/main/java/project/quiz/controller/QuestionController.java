@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class QuestionController {
 
     private final QuestionService questionService;

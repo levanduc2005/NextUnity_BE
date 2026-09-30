@@ -24,33 +24,10 @@ public class CourseAccessValidator {
     private final UserService userService;
 
     /**
-     * 1. Quyền quản trị: Chỉ Creator của Course hoặc ADMIN mới có quyền can thiệp
-     * (Thêm/Sửa/Xóa).
-     */
-    public void validateCreatorOrAdmin(Course course) {
-        if (!isCreatorOrAdmin(course)) {
-            throw new AppException(ErrorCode.NOT_COURSE_CREATOR);
-        }
-    }
-
-    public void validateCreatorOrAdminByLessonId(UUID lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-        validateCreatorOrAdmin(lesson.getCourse());
-    }
-
-    public void validateAccessByLessonId(UUID lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-        validateAccess(lesson.getCourse());
-    }
-
-    /**
-     * 2. Quyền xem nội dung: Creator, ADMIN hoặc Học viên ĐÃ ĐĂNG KÝ khóa học
-     * (Enrolled).
+     * 1. Quyền xem nội dung: ADMIN (toàn quyền xem mọi bài học) hoặc Học viên ĐÃ ĐĂNG KÝ (Enrolled).
      */
     public void validateAccess(Course course) {
-        if (!isCreatorOrAdmin(course)) {
+        if (!SecurityUtils.isCurrentUserAdmin()) {
             UUID currentUserId = SecurityUtils.getCurrentUserId();
             User currentUser = userService.getUserById(currentUserId);
 
@@ -67,20 +44,9 @@ public class CourseAccessValidator {
         }
     }
 
-    /**
-     * 3. Hàm kiểm tra điều kiện (trả về boolean): Dùng khi cần rẽ nhánh logic (như
-     * phân loại Slide Official vs Private).
-     */
-    public boolean isCreatorOrAdmin(Course course) {
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        boolean isCreator = course.getCreator() != null && course.getCreator().getId().equals(currentUserId);
-        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
-        return isCreator || isAdmin;
-    }
-
-    public boolean isCreatorOrAdminByLessonId(UUID lessonId) {
+    public void validateAccessByLessonId(UUID lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-        return isCreatorOrAdmin(lesson.getCourse());
+        validateAccess(lesson.getCourse());
     }
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface QuizService {
 
     /**
-     * Lấy chi tiết bài kiểm tra dành cho Giảng viên / Quản trị viên (có đáp án).
+     * Lấy chi tiết bài kiểm tra dành cho Quản trị viên (có đáp án).
      */
     QuizAdminResponse getQuizAdmin(UUID lessonId);
 

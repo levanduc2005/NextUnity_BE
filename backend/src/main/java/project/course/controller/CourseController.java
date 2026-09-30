@@ -27,7 +27,7 @@ public class CourseController {
     private final CourseService courseService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<CourseSummaryResponse> createCourse(
             @Valid @RequestBody CreateCourseRequest request
     ) {
@@ -49,6 +49,7 @@ public class CourseController {
     }
 
     @GetMapping("/my-created")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<List<CourseSummaryResponse>> getMyCreatedCourses() {
         List<CourseSummaryResponse> response = courseService.getMyCreatedCourses();
         return ApiResponse.success(response, "Lấy danh sách khóa học của tôi thành công");

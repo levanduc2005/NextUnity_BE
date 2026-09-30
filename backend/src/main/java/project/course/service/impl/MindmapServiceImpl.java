@@ -20,57 +20,50 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MindmapServiceImpl implements MindmapService {
 
-    private final MindmapRepository mindmapRepository;
-    private final LessonRepository lessonRepository;
+        private final MindmapRepository mindmapRepository;
+        private final LessonRepository lessonRepository;
 
-    private final MindmapMapper mindmapMapper;
+        private final MindmapMapper mindmapMapper;
 
-    private final CourseAccessValidator courseAccessValidator;
+        private final CourseAccessValidator courseAccessValidator;
 
-    @Override
-    public MindmapResponse getMindmapByLessonId(UUID lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
-                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+        @Override
+        public MindmapResponse getMindmapByLessonId(UUID lessonId) {
+                Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
+                                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        courseAccessValidator.validateAccess(lesson.getCourse());
+                courseAccessValidator.validateAccess(lesson.getCourse());
 
-        Mindmap mindmap = mindmapRepository.findByLessonId(lessonId).orElseThrow(
-                () -> new AppException(ErrorCode.MINDMAP_NOT_FOUND));
+                Mindmap mindmap = mindmapRepository.findByLessonId(lessonId).orElseThrow(
+                                () -> new AppException(ErrorCode.MINDMAP_NOT_FOUND));
 
-        return mindmapMapper.toResponse(mindmap);
-    }
+                return mindmapMapper.toResponse(mindmap);
+        }
 
-    @Override
-    public MindmapResponse saveMindmap(UUID lessonId, SaveMindmapRequest request) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
-                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+        @Override
+        public MindmapResponse saveMindmap(UUID lessonId, SaveMindmapRequest request) {
+                Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
+                                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(lesson.getCourse());
+                Mindmap mindmap = mindmapRepository.findByLessonId(lessonId)
+                                .map(existing -> {
+                                        mindmapMapper.updateEntity(request, existing);
+                                        return existing;
+                                })
+                                .orElseGet(() -> {
+                                        Mindmap newMindmap = mindmapMapper.toEntity(request);
+                                        newMindmap.setLesson(lesson);
+                                        return newMindmap;
+                                });
 
-         Mindmap mindmap = mindmapRepository.findByLessonId(lessonId)
-                 .map(existing -> {
-                     mindmapMapper.updateEntity(request, existing);
-                        return existing;
-                 })
-                 .orElseGet(() -> {
-                        Mindmap newMindmap = mindmapMapper.toEntity(request);
-                        newMindmap.setLesson(lesson);
-                        return newMindmap;
-                 });
+                return mindmapMapper.toResponse(mindmapRepository.save(mindmap));
+        }
 
-        return mindmapMapper.toResponse(mindmapRepository.save(mindmap));
-    }
+        @Override
+        public void deleteMindmap(UUID lessonId) {
+                Mindmap mindmap = mindmapRepository.findByLessonId(lessonId)
+                                .orElseThrow(() -> new AppException(ErrorCode.MINDMAP_NOT_FOUND));
 
-    @Override
-    public void deleteMindmap(UUID lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
-                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdmin(lesson.getCourse());
-
-        Mindmap mindmap = mindmapRepository.findByLessonId(lessonId)
-                .orElseThrow(() -> new AppException(ErrorCode.MINDMAP_NOT_FOUND));
-
-        mindmapRepository.delete(mindmap);
-    }
+                mindmapRepository.delete(mindmap);
+        }
 }

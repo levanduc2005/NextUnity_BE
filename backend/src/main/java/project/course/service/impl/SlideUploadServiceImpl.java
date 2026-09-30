@@ -10,7 +10,6 @@ import project.course.entity.Lesson;
 import project.course.entity.SlideUpload;
 import project.course.entity.enums.SlideStatus;
 import project.course.mapper.SlideUploadMapper;
-import project.course.repository.EnrollmentRepository;
 import project.course.repository.LessonRepository;
 import project.course.repository.SlideUploadRepository;
 import project.course.service.SlideUploadService;
@@ -18,7 +17,6 @@ import project.course.validator.CourseAccessValidator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
 import project.shared.util.SecurityUtils;
-import project.user.repository.UserRepository;
 import project.user.service.UserService;
 
 import java.util.List;
@@ -32,8 +30,6 @@ public class SlideUploadServiceImpl implements SlideUploadService {
 
     private final SlideUploadRepository slideUploadRepository;
     private final LessonRepository lessonRepository;
-    private final EnrollmentRepository enrollmentRepository;
-    private final UserRepository userRepository;
 
     private final SlideUploadMapper slideUploadMapper;
 
@@ -48,7 +44,7 @@ public class SlideUploadServiceImpl implements SlideUploadService {
         courseAccessValidator.validateAccess(course);
 
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        boolean isCreatorOrAdmin = courseAccessValidator.isCreatorOrAdmin(course);
+        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
 
         List<SlideUpload> slides = slideUploadRepository.findByLessonId(lessonId);
 
@@ -62,9 +58,8 @@ public class SlideUploadServiceImpl implements SlideUploadService {
                     if (slide.getStatus() == SlideStatus.PUBLIC) {
                         return true;
                     }
-                    // 3. Giảng viên/Admin: xem được các tài liệu đóng góp PENDING / REJECTED để
-                    // duyệt
-                    if (isCreatorOrAdmin && (slide.getStatus() == SlideStatus.PENDING
+                    // 3. Admin: xem được các tài liệu đóng góp PENDING / REJECTED để duyệt
+                    if (isAdmin && (slide.getStatus() == SlideStatus.PENDING
                             || slide.getStatus() == SlideStatus.REJECTED)) {
                         return true;
                     }
@@ -87,7 +82,7 @@ public class SlideUploadServiceImpl implements SlideUploadService {
         slideUpload.setLesson(lesson);
         slideUpload.setUploader(userService.getUserById(currentUserId));
 
-        if (courseAccessValidator.isCreatorOrAdmin(course)) {
+        if (SecurityUtils.isCurrentUserAdmin()) {
             slideUpload.setStatus(SlideStatus.PUBLIC);
         } else {
             slideUpload.setStatus(SlideStatus.PRIVATE);
@@ -121,9 +116,7 @@ public class SlideUploadServiceImpl implements SlideUploadService {
         SlideUpload slideUpload = slideUploadRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.SLIDE_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(slideUpload.getLesson().getCourse());
-
-        if(slideUpload.getStatus() != SlideStatus.PENDING) {
+        if (slideUpload.getStatus() != SlideStatus.PENDING) {
             throw new AppException(ErrorCode.INVALID_SLIDE_ACTION);
         }
 
@@ -138,9 +131,7 @@ public class SlideUploadServiceImpl implements SlideUploadService {
         SlideUpload slideUpload = slideUploadRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.SLIDE_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(slideUpload.getLesson().getCourse());
-
-        if(slideUpload.getStatus() != SlideStatus.PENDING) {
+        if (slideUpload.getStatus() != SlideStatus.PENDING) {
             throw new AppException(ErrorCode.INVALID_SLIDE_ACTION);
         }
 
@@ -160,10 +151,9 @@ public class SlideUploadServiceImpl implements SlideUploadService {
                 () -> new AppException(ErrorCode.SLIDE_NOT_FOUND));
 
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        Course course = slideUpload.getLesson().getCourse();
 
-        if (!slideUpload.getUploader().getId().equals(currentUserId)) {
-            courseAccessValidator.validateCreatorOrAdmin(course);
+        if (!slideUpload.getUploader().getId().equals(currentUserId) && !SecurityUtils.isCurrentUserAdmin()) {
+            throw new AppException(ErrorCode.NOT_SLIDE_UPLOADER);
         }
 
         slideUploadRepository.delete(slideUpload);

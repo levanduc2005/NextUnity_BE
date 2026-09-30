@@ -25,7 +25,7 @@ public class MindmapController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<MindmapResponse> saveMindmap(
             @PathVariable UUID lessonId,
             @Valid @RequestBody SaveMindmapRequest request
@@ -35,7 +35,7 @@ public class MindmapController {
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> deleteMindmap(@PathVariable UUID lessonId) {
         mindmapService.deleteMindmap(lessonId);
         return ApiResponse.success(null, "Xóa sơ đồ tư duy thành công");

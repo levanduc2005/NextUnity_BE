@@ -39,7 +39,6 @@ public class LessonServiceImpl implements LessonService {
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
 
         Course course = module.getCourse();
-        courseAccessValidator.validateCreatorOrAdmin(course);
 
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setModule(module);
@@ -67,8 +66,6 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(lesson.getModule().getCourse());
-
         lessonMapper.updateEntity(request, lesson);
 
         return lessonMapper.toDetailResponse(lessonRepository.save(lesson));
@@ -81,7 +78,6 @@ public class LessonServiceImpl implements LessonService {
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
         Course course = lesson.getModule().getCourse();
-        courseAccessValidator.validateCreatorOrAdmin(course);
 
         course.setTotalLessons(Math.max(0, course.getTotalLessons() - 1));
         courseRepository.save(course);

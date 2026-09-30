@@ -51,8 +51,6 @@ public class FlashcardServiceImpl implements FlashcardService {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
                 () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(lesson.getCourse());
-
         Flashcard flashcard = flashcardMapper.toEntity(request);
         flashcard.setLesson(lesson);
         int quantityFlashcards = flashcardRepository.countByLessonId(lessonId);
@@ -66,8 +64,6 @@ public class FlashcardServiceImpl implements FlashcardService {
         Flashcard flashcard = flashcardRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(flashcard.getLesson().getCourse());
-
         flashcardMapper.updateEntity(request, flashcard);
 
         return flashcardMapper.toResponse(flashcardRepository.save(flashcard));
@@ -75,11 +71,6 @@ public class FlashcardServiceImpl implements FlashcardService {
 
     @Override
     public void reorderFlashcards(UUID lessonId, ReorderFlashcardsRequest request) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
-                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdmin(lesson.getCourse());
-
         List<Flashcard> flashcards = flashcardRepository.findByLessonIdOrderByOrderIndexAsc(lessonId);
 
         if (flashcards.size() != request.flashcardIds().size()) {
@@ -106,8 +97,6 @@ public class FlashcardServiceImpl implements FlashcardService {
     public void deleteFlashcard(UUID id) {
         Flashcard flashcard = flashcardRepository.findById(id).orElseThrow(
                 () -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdmin(flashcard.getLesson().getCourse());
 
         int deletedOrderIndex = flashcard.getOrderIndex();
         flashcardRepository.delete(flashcard);

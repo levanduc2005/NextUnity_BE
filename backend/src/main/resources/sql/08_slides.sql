@@ -11,7 +11,7 @@ VALUES
     (
         'e5000000-0000-0000-0000-000000000001', NOW(), NOW(),
         'e2000000-0000-0000-0000-000000000001',
-        'b0000000-0000-0000-0000-000000000001', -- Dr. Phong (Instructor)
+        'b0000000-0000-0000-0000-000000000001', -- Dr. Phong (Admin)
         'Slide_01_AI_Introduction_Official.pdf',
         'https://storage.nextunity.com/slides/ai_intro_official.pdf',
         'PUBLIC', NULL

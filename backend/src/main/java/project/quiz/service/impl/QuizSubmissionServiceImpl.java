@@ -157,11 +157,10 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
     }
 
     @Override
-    public List<QuizSubmissionSummaryResponse> getQuizSubmissionsForInstructor(UUID quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
-                () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdminByLessonId(quiz.getLesson().getId());
+    public List<QuizSubmissionSummaryResponse> getQuizSubmissionsForAdmin(UUID quizId) {
+        if (!quizRepository.existsById(quizId)) {
+            throw new AppException(ErrorCode.QUIZ_NOT_FOUND);
+        }
 
         return quizSubmissionRepository.findByQuizIdOrderBySubmittedAtDesc(quizId).stream()
                 .map(quizSubmissionMapper::toSummaryResponse)
@@ -175,10 +174,9 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
 
         UUID currentUserId = SecurityUtils.getCurrentUserId();
         boolean isOwner = submission.getUser().getId().equals(currentUserId);
-        boolean isInstructor = courseAccessValidator
-                .isCreatorOrAdminByLessonId(submission.getQuiz().getLesson().getId());
+        boolean isAdmin = SecurityUtils.isCurrentUserAdmin();
 
-        if (!isOwner && !isInstructor) {
+        if (!isOwner && !isAdmin) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 

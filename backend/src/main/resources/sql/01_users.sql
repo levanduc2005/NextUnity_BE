@@ -2,8 +2,7 @@
 INSERT INTO roles (id, name, description, created_at, updated_at)
 VALUES
     ('a0000000-0000-0000-0000-000000000001', 'ADMIN', 'Quản trị viên hệ thống', NOW(), NOW()),
-    ('a0000000-0000-0000-0000-000000000003', 'STUDENT', 'Sinh viên', NOW(), NOW()),
-    ('a0000000-0000-0000-0000-000000000004', 'INSTRUCTOR', 'Giảng viên', NOW(), NOW())
+    ('a0000000-0000-0000-0000-000000000003', 'STUDENT', 'Sinh viên', NOW(), NOW())
     ON CONFLICT (id) DO NOTHING;
 
 -- 2. Seed Users (Mật khẩu băm Bcrypt của '123456')
@@ -12,7 +11,7 @@ INSERT INTO users (
     name, university, student_id, avatar_url, points, streak, gender, date_of_birth, cohort, major, bio
 )
 VALUES
-    -- Admin / Giảng viên (khớp admin@nextunity.com & phongnx)
+    -- Admin (khớp admin@nextunity.com & phongnx)
     ('b0000000-0000-0000-0000-000000000001', NOW(), NOW(), NULL, 'a0000000-0000-0000-0000-000000000001', 'admin@nextunity.com', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.', 'phongnx',
      'Dr. Nguyen Xuan Phong', 'FPT Can Tho', 'GV000001', 'https://api.dicebear.com/7.x/avataaars/svg?seed=phongnx', 5000, 30, 'male', '1990-07-25', 0, 'Computer Science', 'Senior Lecturer with 10+ years of experience.'),
 

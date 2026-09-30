@@ -27,7 +27,7 @@ public class FlashcardController {
     }
 
     @PostMapping("/api/lessons/{lessonId}/flashcards")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<FlashcardResponse> createFlashcard(
             @PathVariable UUID lessonId,
             @Valid @RequestBody CreateFlashcardRequest request
@@ -37,7 +37,7 @@ public class FlashcardController {
     }
 
     @PutMapping("/api/flashcards/{id}")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<FlashcardResponse> updateFlashcard(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateFlashcardRequest request
@@ -47,7 +47,7 @@ public class FlashcardController {
     }
 
     @PutMapping("/api/lessons/{lessonId}/flashcards/reorder")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> reorderFlashcards(
             @PathVariable UUID lessonId,
             @Valid @RequestBody ReorderFlashcardsRequest request
@@ -57,7 +57,7 @@ public class FlashcardController {
     }
 
     @DeleteMapping("/api/flashcards/{id}")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<Void> deleteFlashcard(@PathVariable UUID id) {
         flashcardService.deleteFlashcard(id);
         return ApiResponse.success(null, "Xóa flashcard thành công");

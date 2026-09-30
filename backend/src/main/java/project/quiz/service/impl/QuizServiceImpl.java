@@ -32,8 +32,6 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizAdminResponse getQuizAdmin(UUID lessonId) {
-        courseAccessValidator.validateCreatorOrAdminByLessonId(lessonId);
-
         Quiz quiz = quizRepository.findByLessonId(lessonId).orElseThrow(
                 () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
 
@@ -57,8 +55,6 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional
     public QuizAdminResponse createQuiz(UUID lessonId, CreateQuizRequest request) {
-        courseAccessValidator.validateCreatorOrAdminByLessonId(lessonId);
-
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
                 () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
@@ -79,8 +75,6 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdminByLessonId(quiz.getLesson().getId());
-
         quizMapper.updateEntity(request, quiz);
 
         return quizMapper.toAdminResponse(quizRepository.save(quiz));
@@ -91,8 +85,6 @@ public class QuizServiceImpl implements QuizService {
     public QuizAdminResponse togglePublish(UUID quizId) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdminByLessonId(quiz.getLesson().getId());
 
         if (quiz.getStatus() == QuizStatus.DRAFT) {
             // Guard: Đề thi phải có ít nhất 1 câu hỏi mới được phép xuất bản
@@ -112,8 +104,6 @@ public class QuizServiceImpl implements QuizService {
     public void deleteQuiz(UUID quizId) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdminByLessonId(quiz.getLesson().getId());
 
         quizRepository.delete(quiz);
     }

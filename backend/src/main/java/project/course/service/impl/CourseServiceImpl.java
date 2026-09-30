@@ -15,7 +15,6 @@ import project.course.mapper.CourseMapper;
 import project.course.repository.CourseRepository;
 import project.course.repository.EnrollmentRepository;
 import project.course.service.CourseService;
-import project.course.validator.CourseAccessValidator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
 import project.shared.util.SecurityUtils;
@@ -36,8 +35,6 @@ public class CourseServiceImpl implements CourseService {
     private final EnrollmentRepository enrollmentRepository;
 
     private final CourseMapper courseMapper;
-
-    private final CourseAccessValidator courseAccessValidator;
 
     @Override
     public CourseSummaryResponse createCourse(CreateCourseRequest request) {
@@ -87,8 +84,6 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdmin(course);
-
         courseMapper.updateEntity(request, course);
         return courseMapper.toSummaryResponse(courseRepository.save(course));
     }
@@ -97,8 +92,6 @@ public class CourseServiceImpl implements CourseService {
     public void deleteCourse(UUID id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdmin(course);
 
         courseRepository.delete(course);
     }

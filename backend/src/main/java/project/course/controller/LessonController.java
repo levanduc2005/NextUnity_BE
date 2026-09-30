@@ -19,7 +19,7 @@ public class LessonController {
     private final LessonService lessonService;
 
     @PostMapping("/api/modules/{moduleId}/lessons")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<LessonDetailResponse> createLesson(
             @PathVariable UUID moduleId,
             @Valid @RequestBody CreateLessonRequest request

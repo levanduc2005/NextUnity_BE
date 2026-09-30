@@ -35,9 +35,9 @@ public class QuizSubmissionController {
     }
 
     @GetMapping("/api/quizzes/{quizId}/submissions")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
-    public ApiResponse<List<QuizSubmissionSummaryResponse>> getQuizSubmissionsForInstructor(@PathVariable UUID quizId) {
-        List<QuizSubmissionSummaryResponse> response = quizSubmissionService.getQuizSubmissionsForInstructor(quizId);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<List<QuizSubmissionSummaryResponse>> getQuizSubmissionsForAdmin(@PathVariable UUID quizId) {
+        List<QuizSubmissionSummaryResponse> response = quizSubmissionService.getQuizSubmissionsForAdmin(quizId);
         return ApiResponse.success(response, "Lấy danh sách học viên nộp bài thành công");
     }
 

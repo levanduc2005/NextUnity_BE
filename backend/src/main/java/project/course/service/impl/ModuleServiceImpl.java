@@ -12,10 +12,8 @@ import project.course.mapper.ModuleMapper;
 import project.course.repository.CourseRepository;
 import project.course.repository.ModuleRepository;
 import project.course.service.ModuleService;
-import project.course.validator.CourseAccessValidator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
-import project.shared.util.SecurityUtils;
 
 import java.util.UUID;
 
@@ -28,14 +26,10 @@ public class ModuleServiceImpl implements ModuleService {
 
     private final ModuleMapper moduleMapper;
 
-    private final CourseAccessValidator courseAccessValidator;
-
     @Override
     public ModuleResponse createModule(UUID courseId, CreateModuleRequest request) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdmin(course);
 
         Module module = moduleMapper.toEntity(request);
         module.setCourse(course);
@@ -47,8 +41,6 @@ public class ModuleServiceImpl implements ModuleService {
     public ModuleResponse updateModule(UUID moduleId, UpdateModuleRequest request) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdmin(module.getCourse());
 
         moduleMapper.updateEntity(request, module);
 
@@ -62,7 +54,6 @@ public class ModuleServiceImpl implements ModuleService {
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
 
         Course course = module.getCourse();
-        courseAccessValidator.validateCreatorOrAdmin(course);
 
         int lessonsCount = module.getLessons() != null ? module.getLessons().size() : 0;
         if (lessonsCount > 0) {
@@ -72,5 +63,4 @@ public class ModuleServiceImpl implements ModuleService {
 
         moduleRepository.delete(module);
     }
-
 }

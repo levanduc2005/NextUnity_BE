@@ -3,7 +3,6 @@ package project.quiz.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.course.validator.CourseAccessValidator;
 import project.quiz.dto.question.request.CreateQuestionRequest;
 import project.quiz.dto.question.request.QuestionOptionRequest;
 import project.quiz.dto.question.request.ReorderQuestionsRequest;
@@ -35,7 +34,6 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final QuizRepository quizRepository;
     private final QuestionRepository questionRepository;
-    private final CourseAccessValidator courseAccessValidator;
     private final QuestionMapper questionMapper;
 
     @Override
@@ -43,8 +41,6 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionAdminResponse addQuestion(UUID quizId, CreateQuestionRequest request) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdminByLessonId(quiz.getLesson().getId());
 
         int correctCount = (int) request.options().stream()
                 .filter(otp -> Boolean.TRUE.equals(otp.isCorrect()))
@@ -75,8 +71,6 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionAdminResponse updateQuestion(UUID questionId, UpdateQuestionRequest request) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdminByLessonId(question.getQuiz().getLesson().getId());
 
         // 1. Validate tính hợp lệ của số lượng đáp án đúng
         int correctCount = (int) request.options().stream()
@@ -110,8 +104,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .filter(opt -> opt.getId() != null)
                 .collect(Collectors.toMap(QuestionOption::getId, Function.identity()));
 
-        // Duyệt danh sách mới: cập nhật option cũ hoặc thêm mới, đồng thời cập nhật
-        // orderIndex
+        // Duyệt danh sách mới: cập nhật option cũ hoặc thêm mới, đồng thời cập nhật orderIndex
         for (int i = 0; i < request.options().size(); i++) {
             QuestionOptionRequest optReq = request.options().get(i);
             if (optReq.id() != null && existingMap.containsKey(optReq.id())) {
@@ -134,8 +127,6 @@ public class QuestionServiceImpl implements QuestionService {
     public void reorderQuestions(UUID quizId, ReorderQuestionsRequest request) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
-
-        courseAccessValidator.validateCreatorOrAdminByLessonId(quiz.getLesson().getId());
 
         List<Question> questions = quiz.getQuestions();
 
@@ -164,9 +155,7 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
 
-        courseAccessValidator.validateCreatorOrAdminByLessonId(question.getQuiz().getLesson().getId());
-
-        question.getQuiz(). removeQuestion(question);
+        question.getQuiz().removeQuestion(question);
 
         questionRepository.delete(question);
     }

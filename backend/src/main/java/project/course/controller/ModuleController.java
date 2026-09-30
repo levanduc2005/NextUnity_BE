@@ -19,7 +19,7 @@ public class ModuleController {
     private final ModuleService moduleService;
 
     @PostMapping("/api/courses/{courseId}/modules")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<ModuleResponse> createModule(
             @PathVariable UUID courseId,
             @Valid @RequestBody CreateModuleRequest request
