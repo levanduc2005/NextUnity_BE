@@ -19,5 +19,7 @@ public record CreateCourseRequest(
         @NotNull(message = "Độ khó khóa học không được để trống")
         CourseDifficulty difficulty,
 
-        String thumbnailUrl
+        String thumbnailUrl,
+
+        Boolean isPremium
 ) {}

@@ -9,6 +9,8 @@ import project.course.repository.LessonRepository;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
 import project.shared.util.SecurityUtils;
+import project.user.entity.User;
+import project.user.service.UserService;
 
 import java.util.UUID;
 
@@ -18,6 +20,8 @@ public class CourseAccessValidator {
 
     private final EnrollmentRepository enrollmentRepository;
     private final LessonRepository lessonRepository;
+
+    private final UserService userService;
 
     /**
      * 1. Quyền quản trị: Chỉ Creator của Course hoặc ADMIN mới có quyền can thiệp
@@ -48,6 +52,14 @@ public class CourseAccessValidator {
     public void validateAccess(Course course) {
         if (!isCreatorOrAdmin(course)) {
             UUID currentUserId = SecurityUtils.getCurrentUserId();
+            User currentUser = userService.getUserById(currentUserId);
+
+            // 1. Khóa học Premium yêu cầu tài khoản PLUS còn hiệu lực
+            if (Boolean.TRUE.equals(course.getIsPremium()) && !currentUser.isPlus()) {
+                throw new AppException(ErrorCode.PREMIUM_REQUIRED);
+            }
+
+            // 2. Kiểm tra trạng thái đã đăng ký (Enrolled)
             boolean isEnrolled = enrollmentRepository.existsByUserIdAndCourseId(currentUserId, course.getId());
             if (!isEnrolled) {
                 throw new AppException(ErrorCode.NOT_ENROLLED);

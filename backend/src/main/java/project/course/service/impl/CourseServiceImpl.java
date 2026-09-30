@@ -65,7 +65,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Page<CourseSummaryResponse> searchCourses(String category, CourseDifficulty difficulty, String search, Pageable pageable) {
+    public Page<CourseSummaryResponse> searchCourses(String category, CourseDifficulty difficulty, String search,
+            Pageable pageable) {
         Page<Course> courses = courseRepository.searchCourses(category, difficulty, search, pageable);
 
         return courses.map(courseMapper::toSummaryResponse);

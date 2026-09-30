@@ -3,6 +3,9 @@ package project.quiz.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.course.dto.progress.request.UpdateProgressRequest;
+import project.course.entity.enums.LessonProgressStatus;
+import project.course.service.EnrollmentService;
 import project.course.validator.CourseAccessValidator;
 import project.quiz.dto.submission.request.QuestionAnswerRequest;
 import project.quiz.dto.submission.request.SubmitQuizRequest;
@@ -40,6 +43,7 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
 
     private final CourseAccessValidator courseAccessValidator;
     private final QuizSubmissionMapper quizSubmissionMapper;
+    private final EnrollmentService enrollmentService;
 
     @Override
     @Transactional
@@ -111,6 +115,21 @@ public class QuizSubmissionServiceImpl implements QuizSubmissionService {
 
         // Lưu bài nộp
         quizSubmissionRepository.save(submission);
+
+        // Nối mắt xích: Tự động đánh dấu hoàn thành bài học nếu đạt điểm qua bài quiz
+        if (isPassed) {
+            try {
+                enrollmentService.updateLessonProgress(
+                        quiz.getLesson().getId(),
+                        new UpdateProgressRequest(LessonProgressStatus.COMPLETED)
+                );
+            } catch (AppException e) {
+                // Nếu người làm quiz là creator/admin chưa enroll khóa học, bỏ qua cập nhật tiến độ
+                if (e.getErrorCode() != ErrorCode.NOT_ENROLLED) {
+                    throw e;
+                }
+            }
+        }
 
         // Trả về kết quả hoàn chỉnh
         return new QuizResultResponse(

@@ -6,6 +6,9 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import project.auth.entity.Role;
 import project.shared.common.SoftDeleteEntity;
+import project.user.entity.enums.SubscriptionTier;
+
+import java.time.Instant;
 
 @Entity
 @Table(
@@ -54,4 +57,16 @@ public class User extends SoftDeleteEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SubscriptionTier subscriptionTier = SubscriptionTier.FREE;
+
+    private Instant premiumUntil;
+
+    public boolean isPlus() {
+        return subscriptionTier == SubscriptionTier.PLUS
+                && premiumUntil != null
+                && premiumUntil.isAfter(Instant.now());
+    }
 }

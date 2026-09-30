@@ -13,6 +13,7 @@ public record CourseSummaryResponse(
         CourseDifficulty difficulty,
         String thumbnailUrl,
         Integer totalLessons,
+        Boolean isPremium,
         UUID creatorId,
         String creatorName,
         Instant createdAt

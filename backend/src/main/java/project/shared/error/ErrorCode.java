@@ -70,7 +70,14 @@ public enum ErrorCode {
     INVALID_OPTION_REORDER(HttpStatus.BAD_REQUEST, "Danh sách sắp xếp lựa chọn không hợp lệ"),
     QUIZ_NOT_PUBLISHED(HttpStatus.BAD_REQUEST, "Bài trắc nghiệm chưa được xuất bản"),
     QUIZ_CANNOT_PUBLISH_EMPTY(HttpStatus.BAD_REQUEST, "Không thể xuất bản bài trắc nghiệm chưa có câu hỏi nào"),
-    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài nộp trắc nghiệm không tồn tại");
+    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "Bài nộp trắc nghiệm không tồn tại"),
+    // Subscription & Payment
+    PREMIUM_REQUIRED(HttpStatus.FORBIDDEN, "Khóa học hoặc tính năng này yêu cầu tài khoản PLUS"),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Không tìm thấy thông tin giao dịch"),
+    PAYMENT_ALREADY_PAID(HttpStatus.BAD_REQUEST, "Giao dịch này đã được thanh toán thành công"),
+    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, "Tạo liên kết thanh toán thất bại"),
+    EXIST_ANOTHER_PENDING_PAYMENT(HttpStatus.CONFLICT, "Bạn đang có một giao dịch khác đang chờ thanh toán"),
+    INVALID_WEBHOOK_SIGNATURE(HttpStatus.BAD_REQUEST, "Chữ ký webhook PayOS không hợp lệ");
 
     private final HttpStatus statusCode;
     private final String message;

@@ -1,9 +1,6 @@
 package project.user.mapper;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import project.user.dto.request.UpdateUserProfileRequest;
 import project.user.dto.response.UserResponse;
 import project.user.entity.User;
@@ -11,6 +8,7 @@ import project.user.entity.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Mapping(target = "isPlus", expression = "java(user.isPlus())")
     UserResponse toResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

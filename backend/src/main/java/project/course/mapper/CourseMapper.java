@@ -26,6 +26,7 @@ public interface CourseMapper {
 
     @Mapping(target = "creatorId", source = "course.creator.id")
     @Mapping(target = "creatorName", source = "course.creator.name")
+    @Mapping(target = "isPremium", source = "course.isPremium")
     @Mapping(target = "isEnrolled", source = "isEnrolled")
     @Mapping(target = "myProgressPercent", source = "myProgressPercent")
     CourseDetailResponse toDetailResponse(Course course, Boolean isEnrolled, Integer myProgressPercent);

@@ -42,6 +42,9 @@ public class Course extends SoftDeleteEntity {
     private String thumbnailUrl;
 
     @Column(nullable = false)
+    private Boolean isPremium = false;
+
+    @Column(nullable = false)
     private Integer totalLessons = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

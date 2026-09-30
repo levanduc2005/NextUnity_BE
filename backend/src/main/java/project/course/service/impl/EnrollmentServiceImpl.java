@@ -53,6 +53,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             throw new AppException(ErrorCode.ALREADY_ENROLLED);
         }
 
+        if (Boolean.TRUE.equals(course.getIsPremium()) && !currentUser.isPlus()) {
+            throw new AppException(ErrorCode.PREMIUM_REQUIRED);
+        }
+
         Enrollment enrollment = new Enrollment();
         enrollment.setCourse(course);
         enrollment.setUser(currentUser);
@@ -91,6 +95,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
 
         UUID userId = SecurityUtils.getCurrentUserId();
+        User currentUser = userService.getUserById(userId);
+        if (Boolean.TRUE.equals(course.getIsPremium()) && !currentUser.isPlus()) {
+            throw new AppException(ErrorCode.PREMIUM_REQUIRED);
+        }
+
         Enrollment enrollment = enrollmentRepository.findByUserIdAndCourseId(userId, course.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_ENROLLED));
 
