@@ -44,13 +44,15 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 return http
-                                .csrf(AbstractHttpConfigurer::disable)
+                                .csrf(csrf -> csrf.disable())
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/courses/my-created").authenticated()
-                                                .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/*").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/courses/my-created")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/*")
+                                                .permitAll()
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                                 .build();
