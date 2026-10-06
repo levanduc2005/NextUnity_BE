@@ -54,11 +54,13 @@ public class ModuleServiceImpl implements ModuleService {
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
 
         Course course = module.getCourse();
-
-        int lessonsCount = module.getLessons() != null ? module.getLessons().size() : 0;
-        if (lessonsCount > 0) {
-            course.setTotalLessons(Math.max(0, course.getTotalLessons() - lessonsCount));
-            courseRepository.save(course);
+        if (course != null) {
+            int lessonsCount = module.getLessons() != null ? module.getLessons().size() : 0;
+            if (lessonsCount > 0) {
+                int currentTotal = course.getTotalLessons() != null ? course.getTotalLessons() : 0;
+                course.setTotalLessons(Math.max(0, currentTotal - lessonsCount));
+                courseRepository.save(course);
+            }
         }
 
         moduleRepository.delete(module);

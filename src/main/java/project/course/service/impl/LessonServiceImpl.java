@@ -38,14 +38,16 @@ public class LessonServiceImpl implements LessonService {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
 
-        Course course = module.getCourse();
-
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setModule(module);
         lesson = lessonRepository.save(lesson);
 
-        course.setTotalLessons(course.getTotalLessons() + 1);
-        courseRepository.save(course);
+        Course course = module.getCourse();
+        if (course != null) {
+            int currentTotal = course.getTotalLessons() != null ? course.getTotalLessons() : 0;
+            course.setTotalLessons(currentTotal + 1);
+            courseRepository.save(course);
+        }
 
         return lessonMapper.toDetailResponse(lesson);
 
@@ -77,10 +79,12 @@ public class LessonServiceImpl implements LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
 
-        Course course = lesson.getModule().getCourse();
-
-        course.setTotalLessons(Math.max(0, course.getTotalLessons() - 1));
-        courseRepository.save(course);
+        Course course = lesson.getCourse();
+        if (course != null) {
+            int currentTotal = course.getTotalLessons() != null ? course.getTotalLessons() : 0;
+            course.setTotalLessons(Math.max(0, currentTotal - 1));
+            courseRepository.save(course);
+        }
 
         lessonRepository.delete(lesson);
     }
