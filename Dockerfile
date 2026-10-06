@@ -15,6 +15,9 @@ RUN mvn clean package -DskipTests -B
 FROM eclipse-temurin:23-jre-alpine AS app
 WORKDIR /app
 
+# Cài đặt redis vào image alpine
+RUN apk add --no-cache redis
+
 # Tạo user để tránh dùng user root toàn quyền, bảo mật
 RUN addgroup -S spring && adduser -S spring -G spring 
 USER spring:spring
@@ -22,4 +25,6 @@ USER spring:spring
 # copy file .jar đã biên dịch và đổi tên app.jar
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8000
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+
+# Khởi động redis-server (tối đa 32MB RAM) chạy ngầm, sau đó khởi chạy Spring Boot
+ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --maxmemory 32mb --maxmemory-policy allkeys-lru && exec java -XX:MaxRAMPercentage=75.0 -jar app.jar"]
