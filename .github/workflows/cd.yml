@@ -52,4 +52,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  deploy-to-render:
+    name: Deploy to Render
+    needs: build-and-push-docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          echo "Bắt đầu kích hoạt Render Deploy..."
+          curl -f -sS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo ""
+          echo "Render đã nhận tín hiệu và đang kéo image mới về deploy!"
+
 
