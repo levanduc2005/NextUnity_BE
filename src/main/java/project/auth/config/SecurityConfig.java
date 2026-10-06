@@ -29,6 +29,7 @@ public class SecurityConfig {
 
         /** Endpoint công khai, không cần JWT. */
         private static final String[] PUBLIC_ENDPOINTS = {
+                        "/api/public/**",
                         "/api/auth/**",
                         "/api/roles/**",
                         "/api/payments/webhook",
