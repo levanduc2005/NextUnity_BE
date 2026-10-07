@@ -27,6 +27,7 @@ public class ModuleServiceImpl implements ModuleService {
     private final ModuleMapper moduleMapper;
 
     @Override
+    @Transactional
     public ModuleResponse createModule(UUID courseId, CreateModuleRequest request) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
@@ -38,6 +39,7 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     @Override
+    @Transactional
     public ModuleResponse updateModule(UUID moduleId, UpdateModuleRequest request) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));

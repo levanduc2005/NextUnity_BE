@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.auth.dto.cache.ForgotPasswordCache;
 import project.auth.dto.request.*;
 import project.auth.dto.cache.RegisterCache;
@@ -83,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void verifyRegisterOtp(VerifyOtpRequest request) {
         // 1. normalize email
         String email = EmailUtils.normalize(request.email());
@@ -113,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LoginResult login(LoginRequest request) {
         // 1. get user by email
         User user = userService.getUserByEmail(request.email());
@@ -135,6 +138,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginResult refreshToken(String refreshToken) {
         // 1. verify refresh token
         RefreshToken currentRefreshToken = refreshTokenService.verify(refreshToken);

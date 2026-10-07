@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
 import project.course.dto.course.response.CourseDetailResponse;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CourseServiceImpl implements CourseService {
 
     private final UserService userService;
@@ -37,6 +39,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseMapper courseMapper;
 
     @Override
+    @Transactional
     public CourseSummaryResponse createCourse(CreateCourseRequest request) {
         User currentUser = userService.getUserById(SecurityUtils.getCurrentUserId());
 
@@ -80,6 +83,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public CourseSummaryResponse updateCourse(UUID id, UpdateCourseRequest request) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
@@ -89,6 +93,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public void deleteCourse(UUID id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));

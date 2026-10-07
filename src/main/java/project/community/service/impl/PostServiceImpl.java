@@ -28,6 +28,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
     private final UserService userService;
@@ -122,6 +123,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deletePost(UUID id) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
         Post post = postRepository.findById(id)
