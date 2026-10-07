@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
         RegisterCache cache = RegisterCache.builder()
                 .email(email)
                 .password(encodedPassword)
-                .username(request.username())
+                .fullName(request.fullName())
                 .otp(otp)
                 .build();
         String key = RedisKey.REGISTER + email;
@@ -107,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setEmail(cache.email());
         user.setPasswordHash(cache.password());
-        user.setUsername(cache.username());
+        user.setFullName(cache.fullName());
         user.setRole(userRole);
         userService.saveUser(user);
         // 5. delete cache
@@ -116,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public LoginResult login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         // 1. get user by email
         User user = userService.getUserByEmail(request.email());
         // 2. verify password
@@ -130,16 +130,16 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateAccessToken(user);
         RefreshToken refreshToken = refreshTokenService.create(user);
         // 4. return tokens
-        return new LoginResult(
-                new LoginResponse(accessToken,
-                        userMapper.toResponse(user)),
-                refreshToken.getToken()
+        return new LoginResponse(
+                accessToken,
+                refreshToken.getToken(),
+                userMapper.toResponse(user)
         );
     }
 
     @Override
     @Transactional
-    public LoginResult refreshToken(String refreshToken) {
+    public LoginResponse refreshToken(String refreshToken) {
         // 1. verify refresh token
         RefreshToken currentRefreshToken = refreshTokenService.verify(refreshToken);
         User user = currentRefreshToken.getUser();
@@ -149,10 +149,10 @@ public class AuthServiceImpl implements AuthService {
         // 3. revoke old refresh token
         refreshTokenService.revoke(currentRefreshToken.getToken());
         // 4. return new tokens
-        return new LoginResult(
-                new LoginResponse(accessToken,
-                        userMapper.toResponse(user)),
-                newRefreshToken.getToken()
+        return new LoginResponse(
+                accessToken,
+                newRefreshToken.getToken(),
+                userMapper.toResponse(user)
         );
     }
 

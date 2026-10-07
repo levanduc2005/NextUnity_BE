@@ -10,6 +10,6 @@ public record RegisterRequest(
         @NotBlank(message = "Password is required")
         @Size(min = 5, message = "Password must be at least 5 characters")
         String password,
-        @NotBlank(message = "Username is required")
-        String username
+        @NotBlank(message = "Full name is required")
+        String fullName
 ) {}

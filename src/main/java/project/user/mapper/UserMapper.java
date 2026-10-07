@@ -9,6 +9,7 @@ import project.user.entity.User;
 public interface UserMapper {
 
     @Mapping(target = "isPlus", expression = "java(user.isPlus())")
+    @Mapping(target = "role", source = "role.name")
     UserResponse toResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

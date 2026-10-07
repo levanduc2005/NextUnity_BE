@@ -16,7 +16,7 @@ public interface CommunityMapper {
     Community toEntity(CreateCommunityRequest response);
 
     @Mapping(target = "creatorId", source = "creator.id")
-    @Mapping(target = "creatorName", source = "creator.username")
+    @Mapping(target = "creatorName", source = "creator.fullName")
     @Mapping(
             target = "memberCount",
             expression = "java(community.getMembers() != null ? community.getMembers().size() : 0)"
@@ -26,7 +26,7 @@ public interface CommunityMapper {
     void updateCommunity(UpdateCommunityRequest request, @MappingTarget Community community);
 
     @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "username", source = "user.username")
+    @Mapping(target = "username", source = "user.fullName")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "joinedAt", source = "createdAt")
     CommunityMemberResponse toMemberResponse(CommunityMember member);

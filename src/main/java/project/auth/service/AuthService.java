@@ -1,6 +1,7 @@
 package project.auth.service;
 
 import project.auth.dto.request.*;
+import project.auth.dto.response.LoginResponse;
 
 public interface AuthService {
 
@@ -8,9 +9,9 @@ public interface AuthService {
 
     void verifyRegisterOtp(VerifyOtpRequest request);
 
-    LoginResult login(LoginRequest request);
+    LoginResponse login(LoginRequest request);
 
-    LoginResult refreshToken(String refreshToken);
+    LoginResponse refreshToken(String refreshToken);
 
     void logout(String refreshToken);
 

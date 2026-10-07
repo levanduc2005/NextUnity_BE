@@ -11,7 +11,7 @@ public interface QuizSubmissionMapper {
 
     @Mapping(target = "quizId", source = "quiz.id")
     @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "userName", source = "user.name")
+    @Mapping(target = "userName", source = "user.fullName")
     @Mapping(
             target = "percentage",
             expression = "java(submission.getTotalPoints() != null && submission.getTotalPoints() > 0 ? ((double) submission.getScore() / submission.getTotalPoints()) * 100 : 0.0)"

@@ -21,7 +21,7 @@ public interface PostMapper {
     @Mapping(target = "communityId", source = "community.id")
     @Mapping(target = "communityName", source = "community.name")
     @Mapping(target = "authorId", source = "author.id")
-    @Mapping(target = "authorName", expression = "java(post.getAuthor() != null ? (post.getAuthor().getName() != null && !post.getAuthor().getName().isBlank() ? post.getAuthor().getName() : post.getAuthor().getUsername()) : null)")
+    @Mapping(target = "authorName", expression = "java(post.getAuthor() != null ? post.getAuthor().getFullName() : null)")
     @Mapping(target = "authorAvatar", source = "author.avatarUrl")
     @Mapping(target = "authorUniversity", source = "author.university")
     @Mapping(target = "tags", expression = "java(mapTags(post.getTags()))")

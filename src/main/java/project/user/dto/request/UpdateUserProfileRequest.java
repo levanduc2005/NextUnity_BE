@@ -3,7 +3,7 @@ package project.user.dto.request;
 import java.time.LocalDate;
 
 public record UpdateUserProfileRequest(
-        String name,
+        String fullName,
         String university,
         String studentId,
         String avatarUrl,

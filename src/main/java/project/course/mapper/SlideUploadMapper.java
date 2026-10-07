@@ -22,7 +22,7 @@ public interface SlideUploadMapper {
 
     @Mapping(target = "lessonId", source = "lesson.id")
     @Mapping(target = "uploaderId", source = "uploader.id")
-    @Mapping(target = "uploaderName", source = "uploader.username")
+    @Mapping(target = "uploaderName", source = "uploader.fullName")
     SlideResponse toResponse(SlideUpload slideUpload);
 
     List<SlideResponse> toResponseList(List<SlideUpload> slideUploads);

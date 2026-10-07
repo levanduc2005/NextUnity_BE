@@ -7,7 +7,6 @@ import project.community.dto.comment.request.CreateCommentRequest;
 import project.community.dto.comment.request.UpdateCommentRequest;
 import project.community.dto.comment.response.CommentResponse;
 import project.community.entity.Comment;
-import project.community.entity.enums.ReactionType;
 
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
@@ -18,7 +17,7 @@ public interface CommentMapper {
 
     @Mapping(target = "postId", source = "post.id")
     @Mapping(target = "authorId", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getId() : null)")
-    @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? (comment.getAuthor().getName() != null && !comment.getAuthor().getName().isBlank() ? comment.getAuthor().getName() : comment.getAuthor().getUsername()) : \"[deleted]\")")
+    @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? (comment.getAuthor().getFullName() != null && !comment.getAuthor().getFullName().isBlank() ? comment.getAuthor().getFullName() : \"[deleted]\") : \"[deleted]\")")
     @Mapping(target = "authorAvatar", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? comment.getAuthor().getAvatarUrl() : null)")
     @Mapping(target = "content", expression = "java(comment.getDeletedAt() == null ? comment.getContent() : \"[bình luận đã bị xóa]\")")
     @Mapping(target = "parentId", source = "parent.id")

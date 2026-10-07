@@ -24,7 +24,7 @@ USER spring:spring
 
 # copy file .jar đã biên dịch và đổi tên app.jar
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8000 10000
+EXPOSE 8000
 
 # Khởi động redis-server (15MB RAM) và Java tối ưu hóa cho trần 512MB RAM của Render:
 # -Xms64m -Xmx160m: Giữ Heap an toàn dưới 160MB

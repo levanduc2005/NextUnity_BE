@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import project.auth.dto.request.*;
 import project.auth.dto.response.LoginResponse;
 import project.auth.service.AuthService;
+import project.shared.error.ErrorCode;
+import project.shared.exception.AppException;
 import project.shared.response.ApiResponse;
 import project.shared.util.CookieUtils;
 
@@ -44,45 +46,40 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response
     ) {
-        // 1. authenticate user and generate access token + refresh token
-        LoginResult result = authService.login(request);
-        // 2. set refresh token in HttpOnly cookie
-        cookieUtils.setRefreshTokenCookie(
-                response,
-                result.refreshToken()
-        );
-        return ApiResponse.success(
-                result.response(),
-                "Login successful"
-        );
+        LoginResponse loginResponse = authService.login(request);
+        cookieUtils.setRefreshTokenCookie(response, loginResponse.refreshToken());
+        return ApiResponse.success(loginResponse, "Login successful");
     }
 
     @PostMapping("/refresh")
     public ApiResponse<LoginResponse> refresh(
-            @CookieValue("refresh_token") String refreshToken,
+            @CookieValue(value = "refresh_token", required = false) String cookieRefreshToken,
+            @RequestBody(required = false) RefreshTokenRequest request,
             HttpServletResponse response
     ) {
-        // 1. refresh token is sent in HttpOnly cookie, so we get it from @CookieValue
-        LoginResult result = authService.refreshToken(refreshToken);
-        // 2. set refresh token in HttpOnly cookie
-        cookieUtils.setRefreshTokenCookie(
-                response,
-                result.refreshToken()
-        );
-        return ApiResponse.success(
-                result.response(),
-                "Refresh Token successful"
-        );
+        String token = (request != null && request.refreshToken() != null && !request.refreshToken().isBlank())
+                ? request.refreshToken()
+                : cookieRefreshToken;
+        if (token == null || token.isBlank()) {
+            throw new AppException(ErrorCode.REFRESH_TOKEN_INVALID);
+        }
+        LoginResponse loginResponse = authService.refreshToken(token);
+        cookieUtils.setRefreshTokenCookie(response, loginResponse.refreshToken());
+        return ApiResponse.success(loginResponse, "Refresh Token successful");
     }
 
     @PostMapping("/logout")
     public ApiResponse<Void> logout(
-            @CookieValue("refresh_token") String refreshToken,
+            @CookieValue(value = "refresh_token", required = false) String cookieRefreshToken,
+            @RequestBody(required = false) RefreshTokenRequest request,
             HttpServletResponse response
     ) {
-        // 1. revoke refresh token
-        authService.logout(refreshToken);
-        // 2. clear refresh token cookie
+        String token = (request != null && request.refreshToken() != null && !request.refreshToken().isBlank())
+                ? request.refreshToken()
+                : cookieRefreshToken;
+        if (token != null && !token.isBlank()) {
+            authService.logout(token);
+        }
         cookieUtils.clearRefreshTokenCookie(response);
         return ApiResponse.success(
                 null,

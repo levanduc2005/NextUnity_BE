@@ -6,6 +6,6 @@ import lombok.Builder;
 public record RegisterCache(
         String email,
         String password,
-        String username,
+        String fullName,
         String otp
 ) {}

@@ -25,10 +25,8 @@ import java.time.Instant;
     WHERE id = ?
 """)
 public class User extends SoftDeleteEntity {
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String username;
+    @Column(nullable = false)
+    private String fullName;
 
     @Column(nullable = false, unique = true)
     private String email;
