@@ -26,5 +26,5 @@ USER spring:spring
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8000
 
-# Khởi động redis-server (tối đa 32MB RAM) chạy ngầm, sau đó khởi chạy Spring Boot
-ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --maxmemory 32mb --maxmemory-policy allkeys-lru && exec java -XX:MaxRAMPercentage=75.0 -jar app.jar"]
+# Khởi động redis-server (24MB RAM) và Java với các cờ tối ưu hóa nghiêm ngặt cho giới hạn 512MB RAM của Render
+ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --maxmemory 24mb --maxmemory-policy allkeys-lru && exec java -Xms128m -Xmx256m -Xss512k -XX:MaxMetaspaceSize=110m -XX:+UseSerialGC -jar app.jar"]
