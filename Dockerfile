@@ -26,5 +26,5 @@ USER spring:spring
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8000
 
-# Khởi động redis-server (24MB RAM) và Java với các cờ tối ưu hóa nghiêm ngặt cho giới hạn 512MB RAM của Render
-ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --logfile \"\" --maxmemory 24mb --maxmemory-policy allkeys-lru ; exec java -Xms128m -Xmx256m -Xss512k -XX:MaxMetaspaceSize=110m -XX:+UseSerialGC -jar app.jar"]
+# Khởi động redis-server (20MB RAM) và Java với các cờ tối ưu hóa: Heap 200MB, Metaspace 180MB cho giới hạn 512MB RAM của Render
+ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --logfile \"\" --maxmemory 20mb --maxmemory-policy allkeys-lru ; exec java -Xms96m -Xmx200m -Xss512k -XX:MaxMetaspaceSize=180m -XX:+UseSerialGC -jar app.jar"]
