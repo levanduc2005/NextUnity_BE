@@ -27,4 +27,4 @@ COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8000
 
 # Khởi động redis-server (24MB RAM) và Java với các cờ tối ưu hóa nghiêm ngặt cho giới hạn 512MB RAM của Render
-ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --maxmemory 24mb --maxmemory-policy allkeys-lru && exec java -Xms128m -Xmx256m -Xss512k -XX:MaxMetaspaceSize=110m -XX:+UseSerialGC -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --logfile \"\" --maxmemory 24mb --maxmemory-policy allkeys-lru ; exec java -Xms128m -Xmx256m -Xss512k -XX:MaxMetaspaceSize=110m -XX:+UseSerialGC -jar app.jar"]
