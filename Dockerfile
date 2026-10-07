@@ -24,7 +24,12 @@ USER spring:spring
 
 # copy file .jar đã biên dịch và đổi tên app.jar
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8000
+EXPOSE 8000 10000
 
-# Khởi động redis-server (20MB RAM) và Java với các cờ tối ưu hóa: Heap 200MB, Metaspace 180MB cho giới hạn 512MB RAM của Render
-ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --logfile \"\" --maxmemory 20mb --maxmemory-policy allkeys-lru ; exec java -Xms96m -Xmx200m -Xss512k -XX:MaxMetaspaceSize=180m -XX:+UseSerialGC -jar app.jar"]
+# Khởi động redis-server (15MB RAM) và Java tối ưu hóa cho trần 512MB RAM của Render:
+# -Xms64m -Xmx160m: Giữ Heap an toàn dưới 160MB
+# -Xss384k: Giảm thread stack footprint
+# -XX:MaxMetaspaceSize=140m: Tránh Metaspace phình to
+# -XX:TieredStopAtLevel=1: Biên dịch JIT cấp 1, boot nhanh gấp 2 lần, giảm CPU/RAM lúc boot
+# -XX:+UseSerialGC: GC ít tốn RAM overhead nhất
+ENTRYPOINT ["sh", "-c", "redis-server --daemonize yes --dir /tmp --logfile \"\" --maxmemory 15mb --maxmemory-policy allkeys-lru ; exec java -Xms64m -Xmx160m -Xss384k -XX:MaxMetaspaceSize=140m -XX:TieredStopAtLevel=1 -XX:+UseSerialGC -jar app.jar"]
