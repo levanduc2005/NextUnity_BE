@@ -1,7 +1,6 @@
 package project.shared.mail;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,9 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${brevo.api-key:}")
     private String apiKey;
@@ -43,11 +41,9 @@ public class MailServiceImpl implements MailService {
             Map<String, Object> payload = Map.of(
                     "sender", Map.of(
                             "name", senderName,
-                            "email", senderEmail
-                    ),
+                            "email", senderEmail),
                     "to", List.of(
-                            Map.of("email", email)
-                    ),
+                            Map.of("email", email)),
                     "subject", "Email Verification - NextUnity",
                     "htmlContent", String.format(
                             "<div style=\"font-family: Arial, sans-serif; padding: 24px; color: #333; max-width: 500px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px;\">"
@@ -59,10 +55,9 @@ public class MailServiceImpl implements MailService {
                                     + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\" />"
                                     + "<p style=\"color: #999; font-size: 12px; margin-bottom: 0;\">Đội ngũ phát triển NextUnity</p>"
                                     + "</div>",
-                            otp
-                    ),
-                    "textContent", String.format("Mã xác thực NextUnity của bạn là: %s. Mã có hiệu lực trong 5 phút.", otp)
-            );
+                            otp),
+                    "textContent",
+                    String.format("Mã xác thực NextUnity của bạn là: %s. Mã có hiệu lực trong 5 phút.", otp));
 
             String requestBody = objectMapper.writeValueAsString(payload);
 
@@ -84,7 +79,8 @@ public class MailServiceImpl implements MailService {
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 log.info("Successfully sent OTP email via Brevo API to: {}, response: {}", email, response.body());
             } else {
-                log.error("Failed to send OTP email via Brevo to: {}. Status: {}, Response: {}", email, response.statusCode(), response.body());
+                log.error("Failed to send OTP email via Brevo to: {}. Status: {}, Response: {}", email,
+                        response.statusCode(), response.body());
                 throw new RuntimeException("Brevo API error: " + response.statusCode() + " - " + response.body());
             }
         } catch (Exception e) {
