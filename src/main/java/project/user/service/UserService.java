@@ -1,5 +1,7 @@
 package project.user.service;
 
+import project.user.dto.request.ChangePasswordRequest;
+import project.user.dto.request.CheckPasswordRequest;
 import project.user.dto.request.UpdateUserProfileRequest;
 import project.user.dto.response.UserResponse;
 import project.user.entity.User;
@@ -22,4 +24,8 @@ public interface UserService {
     UserResponse getUserProfileById(UUID id);
 
     UserResponse updateUserProfile(UpdateUserProfileRequest request);
+
+    void checkCurrentPassword(CheckPasswordRequest request);
+
+    void changePassword(ChangePasswordRequest request);
 }

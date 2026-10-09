@@ -3,9 +3,12 @@ package project.user.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
 import project.shared.util.SecurityUtils;
+import project.user.dto.request.ChangePasswordRequest;
+import project.user.dto.request.CheckPasswordRequest;
 import project.user.dto.request.UpdateUserProfileRequest;
 import project.user.dto.response.UserResponse;
 import project.user.entity.User;
@@ -21,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean existsByEmail(String email) {
@@ -71,5 +75,27 @@ public class UserServiceImpl implements UserService {
         User user = getUserById(currentUserId);
         userMapper.updateUserProfile(request, user);
         return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void checkCurrentPassword(CheckPasswordRequest request) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        User user = getUserById(currentUserId);
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(ChangePasswordRequest request) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        User user = getUserById(currentUserId);
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        }
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
     }
 }
