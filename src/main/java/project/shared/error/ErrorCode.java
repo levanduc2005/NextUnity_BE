@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // Authentication
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Không có quyền truy cập"),
+    TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "Bạn thao tác quá nhanh hoặc gửi quá nhiều yêu cầu. Vui lòng thử lại sau ít phút."),
     // OTP
     OTP_ALREADY_SENT(HttpStatus.BAD_REQUEST, "OTP đã được gửi, vui lòng thử lại sau"),
     OTP_EXPIRED(HttpStatus.BAD_REQUEST, "OTP expired"),

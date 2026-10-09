@@ -9,6 +9,8 @@ import project.auth.dto.response.LoginResponse;
 import project.auth.service.AuthService;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
+import project.shared.ratelimit.RateLimit;
+import project.shared.ratelimit.RateLimitType;
 import project.shared.response.ApiResponse;
 import project.shared.util.CookieUtils;
 
@@ -41,6 +43,7 @@ public class AuthController {
         );
     }
 
+    @RateLimit(limit = 5, durationInSeconds = 60, type = RateLimitType.IP)
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(
             @Valid @RequestBody LoginRequest request,
@@ -87,6 +90,8 @@ public class AuthController {
         );
     }
 
+
+    @RateLimit(limit = 1, durationInSeconds = 60, type = RateLimitType.IP)
     @PostMapping("/forgot-password")
     public ApiResponse<Void> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request
