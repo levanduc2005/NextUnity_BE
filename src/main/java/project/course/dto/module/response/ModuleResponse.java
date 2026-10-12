@@ -11,6 +11,5 @@ public record ModuleResponse(
         String title,
         String description,
         Integer orderIndex,
-        Boolean isLocked,
         List<LessonSummaryResponse> lessons
 ) {}

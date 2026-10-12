@@ -13,7 +13,5 @@ public record UpdateModuleRequest(
         String description,
 
         @NotNull(message = "Thứ tự sắp xếp không được để trống")
-        Integer orderIndex,
-
-        Boolean isLocked
+        Integer orderIndex
 ) {}

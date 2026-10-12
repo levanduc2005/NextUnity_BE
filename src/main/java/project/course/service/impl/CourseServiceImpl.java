@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
 import project.course.dto.course.response.CourseCategoryResponse;
+import project.course.dto.course.response.CourseDifficultyResponse;
+import project.course.dto.course.response.CourseFiltersResponse;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
 import project.course.entity.Course;
@@ -42,9 +44,19 @@ public class CourseServiceImpl implements CourseService {
     private final CourseMapper courseMapper;
 
     @Override
-    public List<CourseCategoryResponse> getCategories() {
+    public CourseFiltersResponse getFilterOptions() {
+        return new CourseFiltersResponse(getCategories(), getDifficulties());
+    }
+
+    private List<CourseCategoryResponse> getCategories() {
         return Arrays.stream(CourseCategory.values())
                 .map(category -> new CourseCategoryResponse(category.name(), category.getDisplayName()))
+                .toList();
+    }
+
+    private List<CourseDifficultyResponse> getDifficulties() {
+        return Arrays.stream(CourseDifficulty.values())
+                .map(difficulty -> new CourseDifficultyResponse(difficulty.name(), difficulty.getDisplayName()))
                 .toList();
     }
 

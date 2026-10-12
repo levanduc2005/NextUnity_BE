@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
-import project.course.dto.course.response.CourseCategoryResponse;
+import project.course.dto.course.response.CourseFiltersResponse;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
 import project.course.entity.enums.CourseCategory;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public interface CourseService {
 
-    List<CourseCategoryResponse> getCategories();
+    CourseFiltersResponse getFilterOptions();
 
     CourseSummaryResponse createCourse(CreateCourseRequest request);
 

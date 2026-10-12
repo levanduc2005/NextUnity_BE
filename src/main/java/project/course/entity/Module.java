@@ -36,9 +36,6 @@ public class Module extends SoftDeleteEntity {
     @Column(nullable = false)
     private Integer orderIndex = 1;
 
-    @Column(nullable = false)
-    private Boolean isLocked = false;
-
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
     @SQLRestriction("deleted_at IS NULL")

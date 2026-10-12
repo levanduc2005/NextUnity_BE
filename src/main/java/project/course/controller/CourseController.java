@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
-import project.course.dto.course.response.CourseCategoryResponse;
+import project.course.dto.course.response.CourseFiltersResponse;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
 import project.course.entity.enums.CourseCategory;
@@ -28,10 +28,10 @@ public class CourseController {
 
     private final CourseService courseService;
 
-    @GetMapping("/categories")
-    public ApiResponse<List<CourseCategoryResponse>> getCategories() {
-        List<CourseCategoryResponse> response = courseService.getCategories();
-        return ApiResponse.success(response, "Lấy danh mục khóa học thành công");
+    @GetMapping("/filters")
+    public ApiResponse<CourseFiltersResponse> getFilters() {
+        CourseFiltersResponse response = courseService.getFilterOptions();
+        return ApiResponse.success(response, "Lấy danh mục và độ khó khóa học thành công");
     }
 
     @PostMapping
