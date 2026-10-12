@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import project.course.entity.enums.CourseCategory;
 import project.course.entity.enums.CourseDifficulty;
 import project.shared.common.SoftDeleteEntity;
 import project.user.entity.User;
@@ -26,14 +27,18 @@ import java.util.List;
 @SQLRestriction("deleted_at IS NULL")
 public class Course extends SoftDeleteEntity {
 
+    @Column(length = 50)
+    private String code;
+
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private CourseCategory category = CourseCategory.FPT_COURSES;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

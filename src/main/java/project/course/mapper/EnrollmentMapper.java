@@ -9,6 +9,7 @@ import project.course.entity.Enrollment;
 public interface EnrollmentMapper {
 
     @Mapping(target = "courseId", source = "course.id")
+    @Mapping(target = "courseCode", source = "course.code")
     @Mapping(target = "courseTitle", source = "course.title")
     @Mapping(target = "courseDescription", source = "course.description")
     @Mapping(target = "courseThumbnailUrl", source = "course.thumbnailUrl")

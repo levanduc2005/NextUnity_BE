@@ -20,4 +20,6 @@ public interface AuthService {
     void verifyForgotPasswordOtp(VerifyOtpRequest request);
 
     void resetPassword(ResetPasswordRequest request);
+
+    LoginResponse loginWithGoogle(GoogleLoginRequest request);
 }

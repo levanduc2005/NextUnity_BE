@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
+import project.course.dto.course.response.CourseCategoryResponse;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
 import project.course.entity.Course;
 import project.course.entity.Enrollment;
+import project.course.entity.enums.CourseCategory;
 import project.course.entity.enums.CourseDifficulty;
 import project.course.mapper.CourseMapper;
 import project.course.repository.CourseRepository;
@@ -22,6 +24,7 @@ import project.shared.util.SecurityUtils;
 import project.user.entity.User;
 import project.user.service.UserService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,6 +40,13 @@ public class CourseServiceImpl implements CourseService {
     private final EnrollmentRepository enrollmentRepository;
 
     private final CourseMapper courseMapper;
+
+    @Override
+    public List<CourseCategoryResponse> getCategories() {
+        return Arrays.stream(CourseCategory.values())
+                .map(category -> new CourseCategoryResponse(category.name(), category.getDisplayName()))
+                .toList();
+    }
 
     @Override
     @Transactional
@@ -65,7 +75,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Page<CourseSummaryResponse> searchCourses(String category, CourseDifficulty difficulty, String search,
+    public Page<CourseSummaryResponse> searchCourses(CourseCategory category, CourseDifficulty difficulty, String search,
             Pageable pageable) {
         Page<Course> courses = courseRepository.searchCourses(category, difficulty, search, pageable);
 

@@ -13,10 +13,13 @@ import project.auth.dto.response.LoginResponse;
 import project.auth.entity.RefreshToken;
 import project.auth.entity.Role;
 import project.auth.repository.RoleRepository;
+import project.auth.security.GoogleTokenVerifier;
 import project.auth.security.JwtService;
 import project.auth.service.AuthService;
 import project.auth.service.RefreshTokenService;
 import project.auth.util.OtpGenerator;
+import project.auth.util.PasswordGenerator;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
 import project.shared.mail.MailService;
@@ -42,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
     private final MailService mailService;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final GoogleTokenVerifier googleTokenVerifier;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -235,5 +239,54 @@ public class AuthServiceImpl implements AuthService {
         userService.saveUser(user);
         // 6. delete cache
         redisService.delete(key);
+    }
+
+    @Override
+    @Transactional
+    public LoginResponse loginWithGoogle(GoogleLoginRequest request) {
+        // 1. Xác thực Google ID Token với Google
+        GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.idToken());
+        String email = EmailUtils.normalize(payload.getEmail());
+        String name = (String) payload.get("name");
+        if (name == null || name.isBlank()) {
+            name = email.split("@")[0];
+        }
+
+        User user;
+        // 2. Kiểm tra tài khoản đã tồn tại hay chưa
+        if (userService.existsByEmail(email)) {
+            user = userService.getUserByEmail(email);
+        } else {
+            // 3. Tài khoản mới: Khởi tạo với mật khẩu ngẫu nhiên
+            Role studentRole = roleRepository.findByName("STUDENT")
+                    .or(() -> roleRepository.findByName("USER"))
+                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+            String rawPassword = PasswordGenerator.generateRandomPassword();
+
+            user = new User();
+            user.setEmail(email);
+            user.setFullName(name);
+            user.setPasswordHash(passwordEncoder.encode(rawPassword));
+            user.setRole(studentRole);
+            userService.saveUser(user);
+
+            // 4. Gửi email chào mừng kèm mật khẩu khởi tạo về hòm thư người dùng
+            try {
+                mailService.sendWelcomeGoogleAccount(email, name, rawPassword);
+            } catch (Exception ex) {
+                log.error("Failed to send welcome Google email to {}: {}", email, ex.getMessage());
+            }
+        }
+
+        // 5. Sinh cặp Access Token & Refresh Token của NextUnity
+        String accessToken = jwtService.generateAccessToken(user);
+        RefreshToken refreshToken = refreshTokenService.create(user);
+
+        return new LoginResponse(
+                accessToken,
+                refreshToken.getToken(),
+                userMapper.toResponse(user)
+        );
     }
 }

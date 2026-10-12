@@ -3,6 +3,7 @@ package project.course.dto.course.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import project.course.entity.enums.CourseCategory;
 import project.course.entity.enums.CourseDifficulty;
 
 public record UpdateCourseRequest(
@@ -10,11 +11,14 @@ public record UpdateCourseRequest(
         @Size(min = 3, max = 150, message = "Tiêu đề khóa học từ 3 đến 150 ký tự")
         String title,
 
+        @Size(max = 50, message = "Mã khóa học tối đa 50 ký tự")
+        String code,
+
         @Size(max = 2000, message = "Mô tả khóa học tối đa 2000 ký tự")
         String description,
 
-        @NotBlank(message = "Danh mục không được để trống")
-        String category,
+        @NotNull(message = "Danh mục không được để trống")
+        CourseCategory category,
 
         @NotNull(message = "Độ khó khóa học không được để trống")
         CourseDifficulty difficulty,

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import project.course.entity.Course;
+import project.course.entity.enums.CourseCategory;
 import project.course.entity.enums.CourseDifficulty;
 
 import java.util.List;
@@ -18,12 +19,14 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     @EntityGraph(attributePaths = {"creator"})
     @Query("""
         SELECT c FROM Course c WHERE
-        (CAST(:category AS string) IS NULL OR LOWER(c.category) = LOWER(CAST(:category AS string))) AND
+        (:category IS NULL OR c.category = :category) AND
         (:difficulty IS NULL OR c.difficulty = :difficulty) AND
-        (CAST(:search AS string) IS NULL OR LOWER(c.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
+        (CAST(:search AS string) IS NULL OR 
+         LOWER(c.title) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR 
+         LOWER(c.code) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')))
     """)
     Page<Course> searchCourses(
-            @Param("category") String category,
+            @Param("category") CourseCategory category,
             @Param("difficulty") CourseDifficulty difficulty,
             @Param("search") String search,
             Pageable pageable

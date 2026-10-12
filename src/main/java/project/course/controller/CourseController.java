@@ -10,8 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
+import project.course.dto.course.response.CourseCategoryResponse;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
+import project.course.entity.enums.CourseCategory;
 import project.course.entity.enums.CourseDifficulty;
 import project.course.service.CourseService;
 import project.shared.response.ApiResponse;
@@ -26,6 +28,12 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    @GetMapping("/categories")
+    public ApiResponse<List<CourseCategoryResponse>> getCategories() {
+        List<CourseCategoryResponse> response = courseService.getCategories();
+        return ApiResponse.success(response, "Lấy danh mục khóa học thành công");
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<CourseSummaryResponse> createCourse(
@@ -37,7 +45,7 @@ public class CourseController {
 
     @GetMapping
     public ApiResponse<Page<CourseSummaryResponse>> searchCourses(
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) CourseCategory category,
             @RequestParam(required = false) CourseDifficulty difficulty,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,

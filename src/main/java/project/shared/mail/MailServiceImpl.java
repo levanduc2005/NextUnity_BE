@@ -32,9 +32,48 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendOtp(String email, String otp) {
+        String html = String.format(
+                "<div style=\"font-family: Arial, sans-serif; padding: 24px; color: #333; max-width: 500px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px;\">"
+                        + "<h2 style=\"color: #0066FF; margin-top: 0;\">NextUnity Verification</h2>"
+                        + "<p>Xin chào,</p>"
+                        + "<p>Mã xác thực (OTP) của bạn là:</p>"
+                        + "<div style=\"font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0066FF; background: #F0F7FF; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 20px 0;\">%s</div>"
+                        + "<p style=\"color: #666; font-size: 14px;\">Mã này có hiệu lực trong vòng 5 phút. Vui lòng không chia sẻ mã này cho bất kỳ ai.</p>"
+                        + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\" />"
+                        + "<p style=\"color: #999; font-size: 12px; margin-bottom: 0;\">Đội ngũ phát triển NextUnity</p>"
+                        + "</div>",
+                otp);
+        String text = String.format("Mã xác thực NextUnity của bạn là: %s. Mã có hiệu lực trong 5 phút.", otp);
+        sendEmailViaBrevo(email, "Email Verification - NextUnity", html, text);
+    }
+
+    @Override
+    public void sendWelcomeGoogleAccount(String email, String fullName, String rawPassword) {
+        String displayName = (fullName != null && !fullName.isBlank()) ? fullName : email;
+        String html = String.format(
+                "<div style=\"font-family: Arial, sans-serif; padding: 24px; color: #333; max-width: 520px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px;\">"
+                        + "<h2 style=\"color: #0066FF; margin-top: 0;\">Chào mừng bạn đến với NextUnity!</h2>"
+                        + "<p>Xin chào <strong>%s</strong>,</p>"
+                        + "<p>Tài khoản học tập NextUnity của bạn đã được khởi tạo thành công thông qua đăng nhập Google.</p>"
+                        + "<p>Để bạn có thể đăng nhập bằng Email/Mật khẩu thông thường hoặc đổi mật khẩu sau này, hệ thống đã cấp cho bạn mật khẩu khởi tạo như sau:</p>"
+                        + "<div style=\"font-size: 24px; font-weight: bold; letter-spacing: 2px; color: #0066FF; background: #F0F7FF; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 20px 0;\">%s</div>"
+                        + "<p style=\"color: #555; font-size: 13.5px;\"><strong>Lưu ý:</strong></p>"
+                        + "<ul style=\"color: #666; font-size: 13px; line-height: 1.6; margin-top: 4px;\">"
+                        + "<li>Bạn vẫn luôn có thể đăng nhập 1 chạm bằng nút <strong>'Tiếp tục với Google'</strong>.</li>"
+                        + "<li>Nếu muốn đổi mật khẩu mới, bạn vào mục <strong>Hồ sơ &gt; Đổi mật khẩu</strong> và sử dụng mật khẩu trên làm mật khẩu hiện tại.</li>"
+                        + "</ul>"
+                        + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\" />"
+                        + "<p style=\"color: #999; font-size: 12px; margin-bottom: 0;\">Đội ngũ phát triển NextUnity</p>"
+                        + "</div>",
+                displayName, rawPassword);
+        String text = String.format("Chào mừng %s đến với NextUnity! Mật khẩu khởi tạo tài khoản của bạn là: %s", displayName, rawPassword);
+        sendEmailViaBrevo(email, "Chào mừng bạn đến với NextUnity - Thông tin tài khoản", html, text);
+    }
+
+    private void sendEmailViaBrevo(String email, String subject, String htmlContent, String textContent) {
         if (apiKey == null || apiKey.isBlank()) {
-            log.error("Brevo API key is not configured. Cannot send email to: {}", email);
-            throw new IllegalStateException("Brevo API key is not configured");
+            log.warn("Brevo API key is not configured. Email will be skipped for: {}", email);
+            return;
         }
 
         try {
@@ -44,20 +83,9 @@ public class MailServiceImpl implements MailService {
                             "email", senderEmail),
                     "to", List.of(
                             Map.of("email", email)),
-                    "subject", "Email Verification - NextUnity",
-                    "htmlContent", String.format(
-                            "<div style=\"font-family: Arial, sans-serif; padding: 24px; color: #333; max-width: 500px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px;\">"
-                                    + "<h2 style=\"color: #0066FF; margin-top: 0;\">NextUnity Verification</h2>"
-                                    + "<p>Xin chào,</p>"
-                                    + "<p>Mã xác thực (OTP) của bạn là:</p>"
-                                    + "<div style=\"font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #0066FF; background: #F0F7FF; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 20px 0;\">%s</div>"
-                                    + "<p style=\"color: #666; font-size: 14px;\">Mã này có hiệu lực trong vòng 5 phút. Vui lòng không chia sẻ mã này cho bất kỳ ai.</p>"
-                                    + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\" />"
-                                    + "<p style=\"color: #999; font-size: 12px; margin-bottom: 0;\">Đội ngũ phát triển NextUnity</p>"
-                                    + "</div>",
-                            otp),
-                    "textContent",
-                    String.format("Mã xác thực NextUnity của bạn là: %s. Mã có hiệu lực trong 5 phút.", otp));
+                    "subject", subject,
+                    "htmlContent", htmlContent,
+                    "textContent", textContent);
 
             String requestBody = objectMapper.writeValueAsString(payload);
 
@@ -77,15 +105,13 @@ public class MailServiceImpl implements MailService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                log.info("Successfully sent OTP email via Brevo API to: {}, response: {}", email, response.body());
+                log.info("Successfully sent email via Brevo to: {}, subject: {}", email, subject);
             } else {
-                log.error("Failed to send OTP email via Brevo to: {}. Status: {}, Response: {}", email,
+                log.error("Failed to send email via Brevo to: {}. Status: {}, Response: {}", email,
                         response.statusCode(), response.body());
-                throw new RuntimeException("Brevo API error: " + response.statusCode() + " - " + response.body());
             }
         } catch (Exception e) {
-            log.error("Exception occurred while sending OTP email to: {}", email, e);
-            throw new RuntimeException("Error sending email via Brevo", e);
+            log.error("Exception occurred while sending email to: {}", email, e);
         }
     }
 }

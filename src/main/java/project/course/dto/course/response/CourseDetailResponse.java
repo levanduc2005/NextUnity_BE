@@ -1,6 +1,7 @@
 package project.course.dto.course.response;
 
 import project.course.dto.module.response.ModuleResponse;
+import project.course.entity.enums.CourseCategory;
 import project.course.entity.enums.CourseDifficulty;
 
 import java.time.Instant;
@@ -9,9 +10,11 @@ import java.util.UUID;
 
 public record CourseDetailResponse(
         UUID id,
+        String code,
         String title,
         String description,
-        String category,
+        CourseCategory category,
+        String categoryName,
         CourseDifficulty difficulty,
         String thumbnailUrl,
         Integer totalLessons,

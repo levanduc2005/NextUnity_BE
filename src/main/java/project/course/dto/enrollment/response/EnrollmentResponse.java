@@ -9,6 +9,7 @@ import java.util.UUID;
 public record EnrollmentResponse(
         UUID id,
         UUID courseId,
+        String courseCode,
         String courseTitle,
         String courseDescription,
         String courseThumbnailUrl,
