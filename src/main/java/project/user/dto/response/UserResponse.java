@@ -1,6 +1,7 @@
 package project.user.dto.response;
 
 import project.user.entity.enums.SubscriptionTier;
+import project.user.entity.enums.UserGender;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -14,7 +15,8 @@ public record UserResponse(
         String avatarUrl,
         Integer points,
         Integer streak,
-        String gender,
+        UserGender gender,
+        String genderName,
         LocalDate dateOfBirth,
         Integer cohort,
         String major,

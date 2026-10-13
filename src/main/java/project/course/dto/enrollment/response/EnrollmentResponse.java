@@ -14,9 +14,11 @@ public record EnrollmentResponse(
         String courseDescription,
         String courseThumbnailUrl,
         CourseDifficulty courseDifficulty,
+        String courseDifficultyName,
         Integer totalLessons,
         Integer progressPercent,
         EnrollmentStatus status,
         Instant createdAt,
-        Instant completedAt
+        Instant completedAt,
+        String instructorName
 ) {}

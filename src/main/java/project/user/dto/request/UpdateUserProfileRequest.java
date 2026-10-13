@@ -1,5 +1,7 @@
 package project.user.dto.request;
 
+import project.user.entity.enums.UserGender;
+
 import java.time.LocalDate;
 
 public record UpdateUserProfileRequest(
@@ -7,7 +9,7 @@ public record UpdateUserProfileRequest(
         String university,
         String studentId,
         String avatarUrl,
-        String gender,
+        UserGender gender,
         LocalDate dateOfBirth,
         Integer cohort,
         String major,

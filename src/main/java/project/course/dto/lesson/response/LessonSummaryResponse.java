@@ -8,5 +8,7 @@ public record LessonSummaryResponse(
         UUID id,
         String title,
         Integer orderIndex,
-        LessonType type
+        LessonType type,
+        String typeName,
+        Integer estimatedMinutes
 ) {}

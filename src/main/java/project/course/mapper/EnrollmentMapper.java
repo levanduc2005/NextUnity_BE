@@ -14,6 +14,8 @@ public interface EnrollmentMapper {
     @Mapping(target = "courseDescription", source = "course.description")
     @Mapping(target = "courseThumbnailUrl", source = "course.thumbnailUrl")
     @Mapping(target = "courseDifficulty", source = "course.difficulty")
+    @Mapping(target = "courseDifficultyName", source = "course.difficulty.displayName")
     @Mapping(target = "totalLessons", source = "course.totalLessons")
+    @Mapping(target = "instructorName", source = "course.creator.fullName")
     EnrollmentResponse toResponse(Enrollment enrollment);
 }

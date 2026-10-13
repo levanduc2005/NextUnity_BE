@@ -14,6 +14,7 @@ public record CourseSummaryResponse(
         CourseCategory category,
         String categoryName,
         CourseDifficulty difficulty,
+        String difficultyName,
         String thumbnailUrl,
         Integer totalLessons,
         Boolean isPremium,

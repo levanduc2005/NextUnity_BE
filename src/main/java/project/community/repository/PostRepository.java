@@ -15,6 +15,9 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @EntityGraph(attributePaths = {"author", "community", "tags"})
     List<Post> findByAuthorIdOrderByCreatedAtDesc(UUID authorId);
 
+    @EntityGraph(attributePaths = {"author", "community", "tags"})
+    List<Post> findAllByOrderByCreatedAtDesc();
+
     @Override
     @EntityGraph(attributePaths = {"author", "community", "tags"})
     Optional<Post> findById(UUID id);

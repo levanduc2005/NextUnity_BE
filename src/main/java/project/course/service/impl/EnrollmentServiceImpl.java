@@ -2,6 +2,7 @@ package project.course.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import project.course.dto.enrollment.response.EnrollmentResponse;
 import project.course.dto.progress.request.UpdateProgressRequest;
 import project.course.dto.progress.response.LessonProgressResponse;
@@ -30,6 +31,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EnrollmentServiceImpl implements EnrollmentService {
 
     private final UserService userService;
@@ -43,6 +45,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final LessonProgressMapper lessonProgressMapper;
 
     @Override
+    @Transactional
     public EnrollmentResponse enrollCourse(UUID courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
@@ -86,6 +89,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
+    @Transactional
     public LessonProgressResponse updateLessonProgress(UUID lessonId, UpdateProgressRequest request) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));

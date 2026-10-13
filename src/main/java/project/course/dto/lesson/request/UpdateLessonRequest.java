@@ -18,5 +18,7 @@ public record UpdateLessonRequest(
         @NotNull(message = "Loại bài học không được để trống")
         LessonType type,
 
+        Integer estimatedMinutes,
+
         String videoUrl
 ) {}

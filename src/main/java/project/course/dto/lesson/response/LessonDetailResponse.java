@@ -12,6 +12,8 @@ public record LessonDetailResponse(
         String content,
         Integer orderIndex,
         LessonType type,
+        String typeName,
+        Integer estimatedMinutes,
         String videoUrl,
         Instant createdAt
 ) {}

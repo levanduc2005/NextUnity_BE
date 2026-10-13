@@ -7,6 +7,7 @@ import org.hibernate.annotations.SQLDelete;
 import project.auth.entity.Role;
 import project.shared.common.SoftDeleteEntity;
 import project.user.entity.enums.SubscriptionTier;
+import project.user.entity.enums.UserGender;
 
 import java.time.Instant;
 
@@ -44,7 +45,10 @@ public class User extends SoftDeleteEntity {
     @Column(nullable = false)
     private Integer streak = 0;
 
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private UserGender gender;
+
     private java.time.LocalDate dateOfBirth;
     private Integer cohort;
     private String major;

@@ -17,11 +17,13 @@ public interface CourseMapper {
     @Mapping(target = "creatorId", source = "creator.id")
     @Mapping(target = "creatorName", source = "creator.fullName")
     @Mapping(target = "categoryName", source = "category.displayName")
+    @Mapping(target = "difficultyName", source = "difficulty.displayName")
     CourseSummaryResponse toSummaryResponse(Course course);
 
     @Mapping(target = "creatorId", source = "creator.id")
     @Mapping(target = "creatorName", source = "creator.fullName")
     @Mapping(target = "categoryName", source = "category.displayName")
+    @Mapping(target = "difficultyName", source = "difficulty.displayName")
     @Mapping(target = "isEnrolled", constant = "false")
     @Mapping(target = "myProgressPercent", ignore = true)
     CourseDetailResponse toDetailResponse(Course course);
@@ -29,6 +31,7 @@ public interface CourseMapper {
     @Mapping(target = "creatorId", source = "course.creator.id")
     @Mapping(target = "creatorName", source = "course.creator.fullName")
     @Mapping(target = "categoryName", source = "course.category.displayName")
+    @Mapping(target = "difficultyName", source = "course.difficulty.displayName")
     @Mapping(target = "isPremium", source = "course.isPremium")
     @Mapping(target = "isEnrolled", source = "isEnrolled")
     @Mapping(target = "myProgressPercent", source = "myProgressPercent")

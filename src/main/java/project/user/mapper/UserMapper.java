@@ -10,6 +10,7 @@ public interface UserMapper {
 
     @Mapping(target = "isPlus", expression = "java(user.isPlus())")
     @Mapping(target = "role", source = "role.name")
+    @Mapping(target = "genderName", source = "gender.displayName")
     UserResponse toResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

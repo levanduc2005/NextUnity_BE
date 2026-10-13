@@ -9,10 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ModuleRepository extends JpaRepository<Module, UUID> {
-    @EntityGraph(attributePaths = {"lessons"})
+    @EntityGraph(attributePaths = {"lessons", "course"})
     List<Module> findByCourseIdOrderByOrderIndexAsc(UUID courseId);
 
     @Override
-    @EntityGraph(attributePaths = {"lessons"})
+    @EntityGraph(attributePaths = {"lessons", "course"})
     Optional<Module> findById(UUID id);
 }

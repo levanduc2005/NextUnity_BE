@@ -42,6 +42,9 @@ public class Lesson extends SoftDeleteEntity {
     @Column(nullable = false)
     private LessonType type = LessonType.TEXT;
 
+    @Column(name = "estimated_minutes", nullable = false)
+    private Integer estimatedMinutes = 15;
+
     private String videoUrl;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)

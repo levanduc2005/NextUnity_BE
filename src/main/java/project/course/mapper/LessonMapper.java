@@ -14,9 +14,11 @@ public interface LessonMapper {
 
     Lesson toEntity(CreateLessonRequest request);
 
+    @Mapping(target = "typeName", source = "type.displayName")
     LessonSummaryResponse toSummaryResponse(Lesson lesson);
 
     @Mapping(target = "moduleId", source = "module.id")
+    @Mapping(target = "typeName", source = "type.displayName")
     LessonDetailResponse toDetailResponse(Lesson lesson);
 
     void updateEntity(UpdateLessonRequest request, @MappingTarget Lesson lesson);
