@@ -10,5 +10,6 @@ public record LessonSummaryResponse(
         Integer orderIndex,
         LessonType type,
         String typeName,
-        Integer estimatedMinutes
+        Integer estimatedMinutes,
+        Boolean isCompleted
 ) {}

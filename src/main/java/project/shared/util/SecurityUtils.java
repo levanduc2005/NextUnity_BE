@@ -5,6 +5,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import project.auth.security.CustomUserDetails;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
+
+import java.util.Optional;
 import java.util.UUID;
 
 public class SecurityUtils {
@@ -26,6 +28,16 @@ public class SecurityUtils {
 
     public static UUID getCurrentUserId() {
         return getCurrentUserDetails().getUserId();
+    }
+
+    public static Optional<UUID> getOptionalCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null &&
+                authentication.isAuthenticated() &&
+                authentication.getPrincipal() instanceof CustomUserDetails user) {
+            return Optional.of(user.getUserId());
+        }
+        return Optional.empty();
     }
 
     public static boolean isCurrentUserAdmin() {

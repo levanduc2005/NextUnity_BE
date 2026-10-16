@@ -12,19 +12,16 @@ import project.user.entity.enums.UserGender;
 import java.time.Instant;
 
 @Entity
-@Table(
-        name = "users",
-        indexes = {
-                @Index(name = "idx_users_role_id", columnList = "role_id")
-        }
-)
+@Table(name = "users", indexes = {
+        @Index(name = "idx_users_role_id", columnList = "role_id")
+})
 @Getter
 @Setter
 @SQLDelete(sql = """
-    UPDATE users
-    SET deleted_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-""")
+            UPDATE users
+            SET deleted_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """)
 public class User extends SoftDeleteEntity {
     @Column(nullable = false)
     private String fullName;

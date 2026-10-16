@@ -60,24 +60,28 @@ public class AuthServiceImpl implements AuthService {
         if (userService.existsByEmail(email)) {
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXIST);
         }
-        // 2. generate OTP
-        String otp = OtpGenerator.generate6DigitOtp();
-        // 3. encode password
+
+        String key = RedisKey.REGISTER + email;
+        RegisterCache existingCache = redisService.get(key, RegisterCache.class);
+
+        // 2. Dùng lại mã OTP cũ nếu còn hạn trong Redis, nếu chưa có hoặc đã hết hạn thì sinh mã mới
+        String otp = (existingCache != null)
+                ? existingCache.otp()
+                : OtpGenerator.generate6DigitOtp();
+
+        // 3. encode password mới nhất
         String encodedPassword = passwordEncoder.encode(request.password());
-        // 4. save to Redis
+
+        // 4. Lưu / cập nhật cache Redis với thông tin họ tên & mật khẩu mới nhất
         RegisterCache cache = RegisterCache.builder()
                 .email(email)
                 .password(encodedPassword)
                 .fullName(request.fullName())
                 .otp(otp)
                 .build();
-        String key = RedisKey.REGISTER + email;
-        // check if OTP already sent
-        if (redisService.exists(key)) {
-            throw new AppException(ErrorCode.OTP_ALREADY_SENT);
-        }
         redisService.set(key, cache, Duration.ofMinutes(otpExpirationMinute));
-        // 5. send email
+
+        // 5. Luôn gửi email để người dùng nhận được thông báo mới nhất trong hòm thư
         try {
             mailService.sendOtp(email, otp);
         } catch (Exception ex) {
@@ -172,11 +176,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userService.getUserByEmail(request.email());
         // 2. generate OTP
         String otp = OtpGenerator.generate6DigitOtp();
-        // check if OTP already sent
         String key = RedisKey.FORGOT_PASSWORD + user.getEmail();
-        if (redisService.exists(key)) {
-            throw new AppException(ErrorCode.OTP_ALREADY_SENT);
-        }
         // 3. save OTP to Redis
         ForgotPasswordCache cache = ForgotPasswordCache.builder()
                 .otp(otp)
@@ -288,5 +288,36 @@ public class AuthServiceImpl implements AuthService {
                 refreshToken.getToken(),
                 userMapper.toResponse(user)
         );
+    }
+
+    @Override
+    public void resendRegisterOtp(SendOtpRequest request) {
+        // 1. Chuẩn hóa email
+        String email = EmailUtils.normalize(request.email());
+
+        // 2. Kiểm tra phiên đăng ký tài khoản mới đang chờ xác thực OTP
+        String registerKey = RedisKey.REGISTER + email;
+        RegisterCache registerCache = redisService.get(registerKey, RegisterCache.class);
+        if (registerCache == null) {
+            throw new AppException(ErrorCode.OTP_EXPIRED);
+        }
+
+        // 3. Tạo mã OTP mới và cập nhật lại cache Redis
+        String newOtp = OtpGenerator.generate6DigitOtp();
+        RegisterCache updatedCache = RegisterCache.builder()
+                .email(registerCache.email())
+                .password(registerCache.password())
+                .fullName(registerCache.fullName())
+                .otp(newOtp)
+                .build();
+        redisService.set(registerKey, updatedCache, Duration.ofMinutes(otpExpirationMinute));
+
+        // 4. Gửi mã OTP mới tới email người dùng
+        try {
+            mailService.sendOtp(email, newOtp);
+        } catch (Exception ex) {
+            log.error("Send register OTP mail failed for {}", email, ex);
+            throw new AppException(ErrorCode.CANNOT_SEND_EMAIL);
+        }
     }
 }

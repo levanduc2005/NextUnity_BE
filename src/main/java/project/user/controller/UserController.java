@@ -25,12 +25,6 @@ public class UserController {
         return ApiResponse.success(response, "Lấy thông tin người dùng hiện tại thành công");
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<UserResponse> getUserById(@PathVariable UUID id) {
-        UserResponse response = userService.getUserProfileById(id);
-        return ApiResponse.success(response, "Lấy thông tin người dùng thành công");
-    }
-
     @PutMapping("/me")
     public ApiResponse<UserResponse> updateProfile(@Valid @RequestBody UpdateUserProfileRequest request) {
         UserResponse response = userService.updateUserProfile(request);

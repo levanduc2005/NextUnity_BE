@@ -23,6 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @RateLimit(limit = 3, durationInSeconds = 60, type = RateLimitType.IP)
     @PostMapping("/register")
     public ApiResponse<Void> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
@@ -40,6 +41,18 @@ public class AuthController {
         return ApiResponse.success(
                 null,
                 "OTP verified successfully. Your account has been created."
+        );
+    }
+
+    @RateLimit(limit = 2, durationInSeconds = 60, type = RateLimitType.IP)
+    @PostMapping("/resend-register-otp")
+    public ApiResponse<Void> resendRegisterOtp(
+            @Valid @RequestBody SendOtpRequest request
+    ) {
+        authService.resendRegisterOtp(request);
+        return ApiResponse.success(
+                null,
+                "Mã OTP đã được gửi lại. Vui lòng kiểm tra email của bạn."
         );
     }
 

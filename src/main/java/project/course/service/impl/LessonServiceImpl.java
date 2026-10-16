@@ -10,13 +10,16 @@ import project.course.entity.Course;
 import project.course.entity.Lesson;
 import project.course.entity.Module;
 import project.course.mapper.LessonMapper;
+import project.course.entity.enums.LessonProgressStatus;
 import project.course.repository.CourseRepository;
+import project.course.repository.LessonProgressRepository;
 import project.course.repository.LessonRepository;
 import project.course.repository.ModuleRepository;
 import project.course.service.LessonService;
 import project.course.validator.CourseAccessValidator;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
+import project.shared.util.SecurityUtils;
 
 import java.util.UUID;
 
@@ -28,6 +31,7 @@ public class LessonServiceImpl implements LessonService {
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
     private final ModuleRepository moduleRepository;
+    private final LessonProgressRepository lessonProgressRepository;
 
     private final LessonMapper lessonMapper;
 
@@ -61,7 +65,12 @@ public class LessonServiceImpl implements LessonService {
 
         courseAccessValidator.validateAccess(lesson.getCourse());
 
-        return lessonMapper.toDetailResponse(lesson);
+        boolean isCompleted = SecurityUtils.getOptionalCurrentUserId()
+                .flatMap(userId -> lessonProgressRepository.findByUserIdAndLessonId(userId, lessonId))
+                .map(lp -> lp.getStatus() == LessonProgressStatus.COMPLETED)
+                .orElse(false);
+
+        return lessonMapper.toDetailResponse(lesson, isCompleted);
     }
 
     @Override

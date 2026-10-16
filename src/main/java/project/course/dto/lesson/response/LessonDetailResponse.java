@@ -15,5 +15,6 @@ public record LessonDetailResponse(
         String typeName,
         Integer estimatedMinutes,
         String videoUrl,
-        Instant createdAt
+        Instant createdAt,
+        Boolean isCompleted
 ) {}

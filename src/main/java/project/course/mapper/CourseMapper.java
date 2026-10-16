@@ -7,9 +7,15 @@ import project.course.dto.course.request.CreateCourseRequest;
 import project.course.dto.course.request.UpdateCourseRequest;
 import project.course.dto.course.response.CourseDetailResponse;
 import project.course.dto.course.response.CourseSummaryResponse;
+import project.course.dto.lesson.response.LessonSummaryResponse;
+import project.course.dto.module.response.ModuleResponse;
 import project.course.entity.Course;
 
-@Mapper(componentModel = "spring", uses = {ModuleMapper.class})
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+@Mapper(componentModel = "spring", uses = { ModuleMapper.class })
 public interface CourseMapper {
 
     Course toEntity(CreateCourseRequest request);
@@ -36,6 +42,55 @@ public interface CourseMapper {
     @Mapping(target = "isEnrolled", source = "isEnrolled")
     @Mapping(target = "myProgressPercent", source = "myProgressPercent")
     CourseDetailResponse toDetailResponse(Course course, Boolean isEnrolled, Integer myProgressPercent);
+
+    default CourseDetailResponse toDetailResponse(Course course, Boolean isEnrolled, Integer myProgressPercent,
+            Set<UUID> completedLessonIds) {
+        CourseDetailResponse response = toDetailResponse(course, isEnrolled, myProgressPercent);
+        if (response.modules() == null) {
+            return response;
+        }
+
+        final Set<UUID> completedSet = completedLessonIds != null ? completedLessonIds : Set.of();
+
+        List<ModuleResponse> updatedModules = response.modules().stream()
+                .map(module -> new ModuleResponse(
+                        module.id(),
+                        module.courseId(),
+                        module.title(),
+                        module.description(),
+                        module.orderIndex(),
+                        module.lessons() == null ? List.of()
+                                : module.lessons().stream()
+                                        .map(lesson -> new LessonSummaryResponse(
+                                                lesson.id(),
+                                                lesson.title(),
+                                                lesson.orderIndex(),
+                                                lesson.type(),
+                                                lesson.typeName(),
+                                                lesson.estimatedMinutes(),
+                                                completedSet.contains(lesson.id())))
+                                        .toList()))
+                .toList();
+
+        return new CourseDetailResponse(
+                response.id(),
+                response.code(),
+                response.title(),
+                response.description(),
+                response.category(),
+                response.categoryName(),
+                response.difficulty(),
+                response.difficultyName(),
+                response.thumbnailUrl(),
+                response.totalLessons(),
+                response.isPremium(),
+                response.creatorId(),
+                response.creatorName(),
+                response.createdAt(),
+                response.isEnrolled(),
+                response.myProgressPercent(),
+                updatedModules);
+    }
 
     void updateEntity(UpdateCourseRequest request, @MappingTarget Course course);
 }

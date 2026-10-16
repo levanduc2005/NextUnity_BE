@@ -13,8 +13,8 @@ public enum ErrorCode {
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "Bạn thao tác quá nhanh hoặc gửi quá nhiều yêu cầu. Vui lòng thử lại sau ít phút."),
     // OTP
     OTP_ALREADY_SENT(HttpStatus.BAD_REQUEST, "OTP đã được gửi, vui lòng thử lại sau"),
-    OTP_EXPIRED(HttpStatus.BAD_REQUEST, "OTP expired"),
-    INVALID_OTP(HttpStatus.BAD_REQUEST, "Invalid OTP"),
+    OTP_EXPIRED(HttpStatus.BAD_REQUEST, "Mã OTP đã hết hạn hoặc phiên xác thực không tồn tại. Vui lòng thử lại."),
+    INVALID_OTP(HttpStatus.BAD_REQUEST, "Mã OTP không chính xác"),
     // Login
     PASSWORD_INCORRECT(HttpStatus.BAD_REQUEST, "Password không chính xác"),
     // Refresh token
@@ -27,6 +27,7 @@ public enum ErrorCode {
     // User
     EMAIL_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "Email đã tồn tại"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User không tồn tại"),
+    CANNOT_DELETE_SELF(HttpStatus.BAD_REQUEST, "Bạn không thể tự xóa tài khoản của chính mình"),
     // Mail
     CANNOT_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể gửi email"),
     // Community

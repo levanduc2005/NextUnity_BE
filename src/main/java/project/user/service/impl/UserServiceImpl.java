@@ -1,6 +1,8 @@
 package project.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,7 @@ import project.user.dto.request.CheckPasswordRequest;
 import project.user.dto.request.UpdateUserProfileRequest;
 import project.user.dto.response.UserResponse;
 import project.user.entity.User;
+import project.user.entity.enums.SubscriptionTier;
 import project.user.mapper.UserMapper;
 import project.user.repository.UserRepository;
 import project.user.service.UserService;
@@ -97,5 +100,25 @@ public class UserServiceImpl implements UserService {
         }
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserResponse> getAllUsers(String role, SubscriptionTier subscriptionTier, String search, Pageable pageable) {
+        String cleanSearch = (search != null && !search.isBlank()) ? search.trim() : null;
+        String cleanRole = (role != null && !role.isBlank()) ? role.trim() : null;
+        return userRepository.searchUsers(cleanRole, subscriptionTier, cleanSearch, pageable)
+                .map(userMapper::toResponse);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserByAdmin(UUID id) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        if (currentUserId.equals(id)) {
+            throw new AppException(ErrorCode.CANNOT_DELETE_SELF);
+        }
+        User user = getUserById(id);
+        userRepository.delete(user);
     }
 }

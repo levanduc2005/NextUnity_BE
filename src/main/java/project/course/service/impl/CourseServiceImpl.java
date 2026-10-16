@@ -26,10 +26,15 @@ import project.shared.util.SecurityUtils;
 import project.user.entity.User;
 import project.user.service.UserService;
 
+import project.course.entity.enums.LessonProgressStatus;
+import project.course.repository.LessonProgressRepository;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +45,7 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final LessonProgressRepository lessonProgressRepository;
 
     private final CourseMapper courseMapper;
 
@@ -77,13 +83,21 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
 
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        Optional<Enrollment> enrollmentOpt = enrollmentRepository.findByUserIdAndCourseId(currentUserId, id);
+        Optional<UUID> currentUserIdOpt = SecurityUtils.getOptionalCurrentUserId();
+        Optional<Enrollment> enrollmentOpt = currentUserIdOpt
+                .flatMap(userId -> enrollmentRepository.findByUserIdAndCourseId(userId, id));
 
         boolean enrolled = enrollmentOpt.isPresent();
         int myProgress = enrollmentOpt.map(Enrollment::getProgressPercent).orElse(0);
 
-        return courseMapper.toDetailResponse(course, enrolled, myProgress);
+        Set<UUID> completedLessonIds = enrolled && currentUserIdOpt.isPresent()
+                ? lessonProgressRepository.findByUserIdAndLesson_Module_Course_Id(currentUserIdOpt.get(), id).stream()
+                        .filter(lp -> lp.getStatus() == LessonProgressStatus.COMPLETED)
+                        .map(lp -> lp.getLesson().getId())
+                        .collect(Collectors.toSet())
+                : Set.of();
+
+        return courseMapper.toDetailResponse(course, enrolled, myProgress, completedLessonIds);
     }
 
     @Override
