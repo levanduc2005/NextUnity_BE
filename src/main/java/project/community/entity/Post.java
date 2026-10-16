@@ -14,7 +14,6 @@ import java.util.Set;
 @Table(
         name = "posts",
         indexes = {
-                @Index(name = "idx_posts_community_id", columnList = "community_id"),
                 @Index(name = "idx_posts_author_id", columnList = "author_id")
         }
 )
@@ -32,10 +31,6 @@ public class Post extends SoftDeleteEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id", nullable = false)
-    private Community community;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

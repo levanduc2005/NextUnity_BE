@@ -31,12 +31,6 @@ public class PostController {
         return ApiResponse.success(response, "Lấy chi tiết bài viết thành công");
     }
 
-    @GetMapping("/community/{communityId}")
-    public ApiResponse<List<PostResponse>> getPostsByCommunity(@PathVariable UUID communityId) {
-        List<PostResponse> response = postService.getPostsByCommunity(communityId);
-        return ApiResponse.success(response, "Lấy danh sách bài viết của cộng đồng thành công");
-    }
-
     @GetMapping("/author/{authorId}")
     public ApiResponse<List<PostResponse>> getPostsByAuthor(@PathVariable UUID authorId) {
         List<PostResponse> response = postService.getPostsByAuthor(authorId);

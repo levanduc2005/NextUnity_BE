@@ -10,7 +10,6 @@ import project.community.entity.Comment;
 import project.community.entity.Post;
 import project.community.mapper.CommentMapper;
 import project.community.repository.CommentRepository;
-import project.community.repository.CommunityMemberRepository;
 import project.community.repository.PostRepository;
 import project.community.service.CommentService;
 import project.shared.error.ErrorCode;
@@ -29,7 +28,6 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
 
     private final CommentRepository commentRepository;
-    private final CommunityMemberRepository communityMemberRepository;
     private final PostRepository postRepository;
 
     private final CommentMapper commentMapper;
@@ -112,16 +110,13 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
-        // Chỉ tác giả hoặc admin/moderator của cộng đồng mới được xóa comment
+        // Tác giả bình luận, chủ bài viết, hoặc Admin hệ thống có quyền xóa
         boolean isAuthor = comment.getAuthor().getId().equals(currentUserId);
-        boolean isGroupAdmin = communityMemberRepository
-                .findByCommunity_IdAndUser_Id(comment.getPost().getCommunity().getId(), currentUserId)
-                .map(member ->
-                        member.getRole() == project.community.entity.enums.CommunityRole.ADMIN
-                        || member.getRole() == project.community.entity.enums.CommunityRole.MODERATOR)
-                .orElse(false);
+        boolean isPostAuthor = comment.getPost().getAuthor().getId().equals(currentUserId);
+        User currentUser = userService.getUserById(currentUserId);
+        boolean isSystemAdmin = currentUser.getRole() != null && "ADMIN".equalsIgnoreCase(currentUser.getRole().getName());
 
-        if (!isAuthor && !isGroupAdmin) {
+        if (!isAuthor && !isPostAuthor && !isSystemAdmin) {
             throw new AppException(ErrorCode.NOT_COMMENT_AUTHOR);
         }
 

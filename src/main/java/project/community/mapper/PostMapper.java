@@ -18,8 +18,8 @@ public interface PostMapper {
 
     void updatePost(UpdatePostRequest request, @MappingTarget Post post);
 
-    @Mapping(target = "communityId", source = "community.id")
-    @Mapping(target = "communityName", source = "community.name")
+    @Mapping(target = "communityId", ignore = true)
+    @Mapping(target = "communityName", ignore = true)
     @Mapping(target = "authorId", source = "author.id")
     @Mapping(target = "authorName", expression = "java(post.getAuthor() != null ? post.getAuthor().getFullName() : null)")
     @Mapping(target = "authorAvatar", source = "author.avatarUrl")

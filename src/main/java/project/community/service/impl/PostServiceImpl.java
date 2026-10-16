@@ -6,12 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import project.community.dto.post.request.CreatePostRequest;
 import project.community.dto.post.request.UpdatePostRequest;
 import project.community.dto.post.response.PostResponse;
-import project.community.entity.Community;
 import project.community.entity.Post;
 import project.community.entity.Tag;
 import project.community.mapper.PostMapper;
-import project.community.repository.CommunityMemberRepository;
-import project.community.repository.CommunityRepository;
 import project.community.repository.PostRepository;
 import project.community.repository.TagRepository;
 import project.community.service.PostService;
@@ -34,8 +31,6 @@ public class PostServiceImpl implements PostService {
     private final UserService userService;
 
     private final PostRepository postRepository;
-    private final CommunityRepository communityRepository;
-    private final CommunityMemberRepository communityMemberRepository;
     private final TagRepository tagRepository;
 
     private final PostMapper postMapper;
@@ -44,21 +39,11 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostResponse createPost(CreatePostRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
-
-        Community community = communityRepository.findById(request.communityId())
-                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
-
-        // Kiểm tra xem người dùng có phải là thành viên của cộng đồng hay không
-        if(!communityMemberRepository.existsByCommunity_IdAndUser_Id(community.getId(), userId)) {
-            throw new AppException(ErrorCode.NOT_A_MEMBER);
-        }
-
         User author = userService.getUserById(userId);
 
         // Tạo bài viết mới
         Post post = postMapper.toEntity(request);
         post.setAuthor(author);
-        post.setCommunity(community);
         post.setTags(handleTags(request.tagNames()));
 
         return postMapper.toResponse(postRepository.save(post));
@@ -70,19 +55,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(postId)
                 .map(postMapper::toResponse)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PostResponse> getPostsByCommunity(UUID communityId) {
-        // Kiểm tra xem cộng đồng có tồn tại hay không
-        if(!communityRepository.existsById(communityId)) {
-            throw new AppException(ErrorCode.COMMUNITY_NOT_FOUND);
-        }
-
-        return postRepository.findByCommunityIdOrderByCreatedAtDesc(communityId).stream()
-                .map(postMapper::toResponse)
-                .toList();
     }
 
     @Override
@@ -129,16 +101,11 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
 
-        // Tác giả bài viết hoặc Admin của Group có quyền xóa bài
         boolean isAuthor = post.getAuthor().getId().equals(currentUserId);
-        boolean isAdmin = communityMemberRepository
-                .findByCommunity_IdAndUser_Id(post.getCommunity().getId(), currentUserId)
-                .map(member ->
-                        member.getRole() == project.community.entity.enums.CommunityRole.ADMIN
-                        || member.getRole() == project.community.entity.enums.CommunityRole.MODERATOR)
-                .orElse(false);
+        User currentUser = userService.getUserById(currentUserId);
+        boolean isSystemAdmin = currentUser.getRole() != null && "ADMIN".equalsIgnoreCase(currentUser.getRole().getName());
 
-        if(!isAuthor && !isAdmin) {
+        if(!isAuthor && !isSystemAdmin) {
             throw new AppException(ErrorCode.NOT_POST_AUTHOR);
         }
 

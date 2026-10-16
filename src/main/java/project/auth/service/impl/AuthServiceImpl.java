@@ -123,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponse login(LoginRequest request) {
         // 1. get user by email
         User user = userService.getUserByEmail(request.email());
