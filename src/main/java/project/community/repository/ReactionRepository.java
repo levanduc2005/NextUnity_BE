@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface ReactionRepository extends JpaRepository<Reaction, UUID> {
     Optional<Reaction> findByPost_IdAndUser_Id(UUID postId, UUID userId);
+
     Optional<Reaction> findByComment_IdAndUser_Id(UUID commentId, UUID userId);
 }

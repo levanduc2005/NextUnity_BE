@@ -40,77 +40,141 @@ public class ReactionServiceImpl implements ReactionService {
     @Transactional
     public ReactionResponse reactPost(UUID postId, ReactionRequest request) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
+        String lockKey = ("post-reaction:" + currentUserId + ":" + postId).intern();
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+        synchronized (lockKey) {
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
 
-        Optional<Reaction> existingReaction = reactionRepository.findByPost_IdAndUser_Id(postId, currentUserId);
-        ReactionType finalReaction = request.reactionType();
-
-        if (post.getReactions() == null) {
-            post.setReactions(new ArrayList<>());
-        }
-
-        if(existingReaction.isPresent()) {
-            Reaction reaction = existingReaction.get();
-            if(reaction.getReactionType().equals(finalReaction)) {
-                // Nếu reaction hiện tại giống với reaction mới, xóa reaction
-                reactionRepository.delete(reaction);
-                post.getReactions().remove(reaction);
-                finalReaction = null;
-            } else {
-                // Nếu reaction hiện tại khác với reaction mới, cập nhật reaction
-                reaction.setReactionType(finalReaction);
+            if (post.getReactions() == null) {
+                post.setReactions(new ArrayList<>());
             }
-        }else{ // Nếu chưa có reaction, tạo mới
-            User user = userService.getUserById(currentUserId);
-            Reaction newReaction = new Reaction();
-            newReaction.setPost(post);
-            newReaction.setUser(user);
-            newReaction.setReactionType(finalReaction);
 
-            post.getReactions().add(newReaction);
+            ReactionType finalReaction = request.reactionType();
+
+            // 1. Kiểm tra trong danh sách in-memory của post trước
+            Reaction existingReaction = null;
+            for (Reaction r : post.getReactions()) {
+                if (r.getUser() != null && currentUserId.equals(r.getUser().getId())) {
+                    existingReaction = r;
+                    break;
+                }
+            }
+
+            // 2. Nếu chưa thấy trong collection, kiểm tra trực tiếp DB
+            if (existingReaction == null) {
+                existingReaction = reactionRepository.findByPost_IdAndUser_Id(postId, currentUserId).orElse(null);
+            }
+
+            if (existingReaction != null) {
+                final Reaction reaction = existingReaction;
+                if (reaction.getReactionType().equals(finalReaction)) {
+                    // Nếu reaction hiện tại giống với reaction mới -> Xóa reaction
+                    reactionRepository.delete(reaction);
+                    post.getReactions().removeIf(r -> r.getId().equals(reaction.getId())
+                            || (r.getUser() != null && currentUserId.equals(r.getUser().getId())));
+                    finalReaction = null;
+                } else {
+                    // Nếu reaction hiện tại khác với reaction mới -> Cập nhật reaction
+                    reaction.setReactionType(finalReaction);
+                    reactionRepository.save(reaction);
+                    boolean found = false;
+                    for (Reaction r : post.getReactions()) {
+                        if (r.getId().equals(reaction.getId())
+                                || (r.getUser() != null && currentUserId.equals(r.getUser().getId()))) {
+                            r.setReactionType(finalReaction);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        post.getReactions().add(reaction);
+                    }
+                }
+            } else {
+                // Nếu hoàn toàn chưa có reaction -> Tạo mới
+                User user = userService.getUserById(currentUserId);
+                Reaction newReaction = new Reaction();
+                newReaction.setPost(post);
+                newReaction.setUser(user);
+                newReaction.setReactionType(finalReaction);
+
+                reactionRepository.save(newReaction);
+                post.getReactions().add(newReaction);
+            }
+
+            return reactionMapper.toPostResponse(post, finalReaction);
         }
-        return reactionMapper.toPostResponse(post, finalReaction);
     }
 
     @Override
     @Transactional
     public ReactionResponse reactComment(UUID commentId, ReactionRequest request) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
+        String lockKey = ("comment-reaction:" + currentUserId + ":" + commentId).intern();
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+        synchronized (lockKey) {
+            Comment comment = commentRepository.findById(commentId)
+                    .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
-        Optional<Reaction> existingReaction = reactionRepository.findByComment_IdAndUser_Id(commentId, currentUserId);
-        ReactionType finalReaction = request.reactionType();
-
-        if (comment.getReactions() == null) {
-            comment.setReactions(new ArrayList<>());
-        }
-
-        if(existingReaction.isPresent()) {
-            Reaction reaction = existingReaction.get();
-            if(reaction.getReactionType().equals(finalReaction)) {
-                // Nếu reaction hiện tại giống với reaction mới, xóa reaction
-                reactionRepository.delete(reaction);
-
-                comment.getReactions().remove(reaction);
-
-                finalReaction = null;
-            } else {
-                // Nếu reaction hiện tại khác với reaction mới, cập nhật reaction
-                reaction.setReactionType(finalReaction);
+            if (comment.getReactions() == null) {
+                comment.setReactions(new ArrayList<>());
             }
-        }else{ // Nếu chưa có reaction, tạo mới
-            User user = userService.getUserById(currentUserId);
-            Reaction newReaction = new Reaction();
-            newReaction.setComment(comment);
-            newReaction.setUser(user);
-            newReaction.setReactionType(finalReaction);
 
-            comment.getReactions().add(newReaction);
+            ReactionType finalReaction = request.reactionType();
+
+            // 1. Kiểm tra trong danh sách in-memory của comment trước
+            Reaction existingReaction = null;
+            for (Reaction r : comment.getReactions()) {
+                if (r.getUser() != null && currentUserId.equals(r.getUser().getId())) {
+                    existingReaction = r;
+                    break;
+                }
+            }
+
+            // 2. Nếu chưa thấy trong collection, kiểm tra trực tiếp DB
+            if (existingReaction == null) {
+                existingReaction = reactionRepository.findByComment_IdAndUser_Id(commentId, currentUserId).orElse(null);
+            }
+
+            if (existingReaction != null) {
+                final Reaction reaction = existingReaction;
+                if (reaction.getReactionType().equals(finalReaction)) {
+                    // Nếu reaction hiện tại giống với reaction mới -> Xóa reaction
+                    reactionRepository.delete(reaction);
+                    comment.getReactions().removeIf(r -> r.getId().equals(reaction.getId())
+                            || (r.getUser() != null && currentUserId.equals(r.getUser().getId())));
+                    finalReaction = null;
+                } else {
+                    // Nếu reaction hiện tại khác với reaction mới -> Cập nhật reaction
+                    reaction.setReactionType(finalReaction);
+                    reactionRepository.save(reaction);
+                    boolean found = false;
+                    for (Reaction r : comment.getReactions()) {
+                        if (r.getId().equals(reaction.getId())
+                                || (r.getUser() != null && currentUserId.equals(r.getUser().getId()))) {
+                            r.setReactionType(finalReaction);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        comment.getReactions().add(reaction);
+                    }
+                }
+            } else {
+                // Nếu hoàn toàn chưa có reaction -> Tạo mới
+                User user = userService.getUserById(currentUserId);
+                Reaction newReaction = new Reaction();
+                newReaction.setComment(comment);
+                newReaction.setUser(user);
+                newReaction.setReactionType(finalReaction);
+
+                reactionRepository.save(newReaction);
+                comment.getReactions().add(newReaction);
+            }
+
+            return reactionMapper.toCommentResponse(comment, finalReaction);
         }
-        return reactionMapper.toCommentResponse(comment, finalReaction);
     }
 }

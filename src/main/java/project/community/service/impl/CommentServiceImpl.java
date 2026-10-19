@@ -63,13 +63,18 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.POST_NOT_FOUND);
         }
 
+        UUID currentUserId = null;
+        try {
+            currentUserId = SecurityUtils.getCurrentUserId();
+        } catch (Exception ignored) {}
+
         List<Comment> allComments = commentRepository.findByPostIdOrderByCreatedAtAsc(postId);
 
         Map<UUID, CommentResponse> mapDto = new HashMap<>();
         List<CommentResponse> responseDto = new ArrayList<>();
 
         for(Comment comment : allComments){
-            CommentResponse dto = commentMapper.toResponse(comment);
+            CommentResponse dto = commentMapper.toResponse(comment, currentUserId);
             mapDto.put(comment.getId(), dto);
         }
         for(Comment comment : allComments){

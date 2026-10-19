@@ -46,14 +46,15 @@ public class PostServiceImpl implements PostService {
         post.setAuthor(author);
         post.setTags(handleTags(request.tagNames()));
 
-        return postMapper.toResponse(postRepository.save(post));
+        return postMapper.toResponse(postRepository.save(post), userId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PostResponse getPostById(UUID postId) {
+        UUID currentUserId = SecurityUtils.getOptionalCurrentUserId().orElse(null);
         return postRepository.findById(postId)
-                .map(postMapper::toResponse)
+                .map(p -> postMapper.toResponse(p, currentUserId))
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
     }
 
@@ -64,15 +65,17 @@ public class PostServiceImpl implements PostService {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
 
+        UUID currentUserId = SecurityUtils.getOptionalCurrentUserId().orElse(null);
         return postRepository.findByAuthorIdOrderByCreatedAtDesc(authorId).stream()
-                .map(postMapper::toResponse)
+                .map(p -> postMapper.toResponse(p, currentUserId))
                 .toList();
     }
 
     @Override
     public List<PostResponse> getAllPosts() {
+        UUID currentUserId = SecurityUtils.getOptionalCurrentUserId().orElse(null);
         return postRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(postMapper::toResponse)
+                .map(p -> postMapper.toResponse(p, currentUserId))
                 .toList();
     }
 
@@ -91,7 +94,7 @@ public class PostServiceImpl implements PostService {
         postMapper.updatePost(request, post);
         post.setTags(handleTags(request.tagNames()));
 
-        return postMapper.toResponse(postRepository.save(post));
+        return postMapper.toResponse(postRepository.save(post), userId);
     }
 
     @Override
