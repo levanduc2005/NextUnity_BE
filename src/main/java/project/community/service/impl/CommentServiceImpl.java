@@ -63,10 +63,7 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.POST_NOT_FOUND);
         }
 
-        UUID currentUserId = null;
-        try {
-            currentUserId = SecurityUtils.getCurrentUserId();
-        } catch (Exception ignored) {}
+        UUID currentUserId = SecurityUtils.getOptionalCurrentUserId().orElse(null);
 
         List<Comment> allComments = commentRepository.findByPostIdOrderByCreatedAtAsc(postId);
 

@@ -70,14 +70,13 @@ public class ReactionServiceImpl implements ReactionService {
                 final Reaction reaction = existingReaction;
                 if (reaction.getReactionType().equals(finalReaction)) {
                     // Nếu reaction hiện tại giống với reaction mới -> Xóa reaction
-                    reactionRepository.delete(reaction);
                     post.getReactions().removeIf(r -> r.getId().equals(reaction.getId())
                             || (r.getUser() != null && currentUserId.equals(r.getUser().getId())));
+                    reactionRepository.delete(reaction);
                     finalReaction = null;
                 } else {
-                    // Nếu reaction hiện tại khác với reaction mới -> Cập nhật reaction
+                    // Nếu reaction hiện tại khác với reaction mới -> Cập nhật reaction trực tiếp trong managed context
                     reaction.setReactionType(finalReaction);
-                    reactionRepository.save(reaction);
                     boolean found = false;
                     for (Reaction r : post.getReactions()) {
                         if (r.getId().equals(reaction.getId())
@@ -99,8 +98,8 @@ public class ReactionServiceImpl implements ReactionService {
                 newReaction.setUser(user);
                 newReaction.setReactionType(finalReaction);
 
-                reactionRepository.save(newReaction);
-                post.getReactions().add(newReaction);
+                Reaction saved = reactionRepository.save(newReaction);
+                post.getReactions().add(saved);
             }
 
             return reactionMapper.toPostResponse(post, finalReaction);
@@ -141,14 +140,13 @@ public class ReactionServiceImpl implements ReactionService {
                 final Reaction reaction = existingReaction;
                 if (reaction.getReactionType().equals(finalReaction)) {
                     // Nếu reaction hiện tại giống với reaction mới -> Xóa reaction
-                    reactionRepository.delete(reaction);
                     comment.getReactions().removeIf(r -> r.getId().equals(reaction.getId())
                             || (r.getUser() != null && currentUserId.equals(r.getUser().getId())));
+                    reactionRepository.delete(reaction);
                     finalReaction = null;
                 } else {
-                    // Nếu reaction hiện tại khác với reaction mới -> Cập nhật reaction
+                    // Nếu reaction hiện tại khác với reaction mới -> Cập nhật reaction trực tiếp trong managed context
                     reaction.setReactionType(finalReaction);
-                    reactionRepository.save(reaction);
                     boolean found = false;
                     for (Reaction r : comment.getReactions()) {
                         if (r.getId().equals(reaction.getId())
@@ -170,8 +168,8 @@ public class ReactionServiceImpl implements ReactionService {
                 newReaction.setUser(user);
                 newReaction.setReactionType(finalReaction);
 
-                reactionRepository.save(newReaction);
-                comment.getReactions().add(newReaction);
+                Reaction saved = reactionRepository.save(newReaction);
+                comment.getReactions().add(saved);
             }
 
             return reactionMapper.toCommentResponse(comment, finalReaction);

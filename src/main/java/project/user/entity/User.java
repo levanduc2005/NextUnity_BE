@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import project.auth.entity.Role;
 import project.shared.common.SoftDeleteEntity;
+import project.shared.util.AvatarUtils;
 import project.user.entity.enums.SubscriptionTier;
 import project.user.entity.enums.UserGender;
 
@@ -67,5 +68,12 @@ public class User extends SoftDeleteEntity {
         return subscriptionTier == SubscriptionTier.PLUS
                 && premiumUntil != null
                 && premiumUntil.isAfter(Instant.now());
+    }
+
+    @PrePersist
+    public void setInitialDefaultAvatar() {
+        if (this.avatarUrl == null || this.avatarUrl.isBlank()) {
+            this.avatarUrl = AvatarUtils.generateDefaultAvatar(this.fullName);
+        }
     }
 }

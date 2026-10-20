@@ -25,6 +25,7 @@ import project.shared.exception.AppException;
 import project.shared.mail.MailService;
 import project.shared.redis.RedisKey;
 import project.shared.redis.RedisService;
+import project.shared.util.AvatarUtils;
 import project.shared.util.EmailUtils;
 import project.user.entity.User;
 import project.user.mapper.UserMapper;
@@ -117,6 +118,9 @@ public class AuthServiceImpl implements AuthService {
         user.setPasswordHash(cache.password());
         user.setFullName(cache.fullName());
         user.setRole(userRole);
+        if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) {
+            user.setAvatarUrl(AvatarUtils.generateDefaultAvatar(user.getFullName()));
+        }
         userService.saveUser(user);
         // 5. delete cache
         redisService.delete(RedisKey.REGISTER + email);
@@ -263,12 +267,18 @@ public class AuthServiceImpl implements AuthService {
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
             String rawPassword = PasswordGenerator.generateRandomPassword();
+            String picture = (String) payload.get("picture");
 
             user = new User();
             user.setEmail(email);
             user.setFullName(name);
             user.setPasswordHash(passwordEncoder.encode(rawPassword));
             user.setRole(studentRole);
+            if (picture != null && !picture.isBlank()) {
+                user.setAvatarUrl(picture);
+            } else {
+                user.setAvatarUrl(AvatarUtils.generateDefaultAvatar(name));
+            }
             userService.saveUser(user);
 
             // 4. Gửi email chào mừng kèm mật khẩu khởi tạo về hòm thư người dùng

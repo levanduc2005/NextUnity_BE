@@ -18,6 +18,7 @@ import project.auth.security.JwtService;
 import project.auth.service.RefreshTokenService;
 import project.auth.service.impl.AuthServiceImpl;
 import project.shared.mail.MailService;
+import project.shared.util.AvatarUtils;
 import project.user.dto.response.UserResponse;
 import project.user.entity.User;
 import project.user.mapper.UserMapper;
@@ -126,12 +127,49 @@ class AuthServiceGoogleTest {
         assertNotNull(response);
         assertEquals("access_token_new", response.accessToken());
         assertEquals("refresh_token_new", response.refreshToken());
+        String expectedDefaultAvatar = AvatarUtils.generateDefaultAvatar("Nguyen Van A");
         verify(userService).saveUser(argThat(user ->
                 "student@gmail.com".equals(user.getEmail()) &&
                 "Nguyen Van A".equals(user.getFullName()) &&
-                user.getAvatarUrl() == null && // Verified: avatar NOT taken from Google
+                expectedDefaultAvatar.equals(user.getAvatarUrl()) &&
                 "hashed_password_123".equals(user.getPasswordHash())
         ));
         verify(mailService).sendWelcomeGoogleAccount(eq("student@gmail.com"), eq("Nguyen Van A"), anyString());
+    }
+
+    @Test
+    void loginWithGoogle_whenNewUserHasGooglePicture_shouldUsePictureAndNotGenerateInitials() {
+        // Arrange
+        String googlePictureUrl = "https://lh3.googleusercontent.com/a/custom-avatar-url";
+        samplePayload.set("picture", googlePictureUrl);
+
+        GoogleLoginRequest request = new GoogleLoginRequest("valid_picture_token");
+        when(googleTokenVerifier.verify("valid_picture_token")).thenReturn(samplePayload);
+        when(userService.existsByEmail("student@gmail.com")).thenReturn(false);
+
+        Role studentRole = new Role();
+        studentRole.setName("STUDENT");
+        when(roleRepository.findByName("STUDENT")).thenReturn(Optional.of(studentRole));
+        when(passwordEncoder.encode(anyString())).thenReturn("hashed_password_123");
+
+        when(jwtService.generateAccessToken(any(User.class))).thenReturn("access_token_picture");
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken("refresh_token_picture");
+        when(refreshTokenService.create(any(User.class))).thenReturn(refreshToken);
+
+        UserResponse userResponse = mock(UserResponse.class);
+        when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+        // Act
+        LoginResponse response = authService.loginWithGoogle(request);
+
+        // Assert
+        assertNotNull(response);
+        verify(userService).saveUser(argThat(user ->
+                "student@gmail.com".equals(user.getEmail()) &&
+                "Nguyen Van A".equals(user.getFullName()) &&
+                googlePictureUrl.equals(user.getAvatarUrl()) && // Avatar lấy từ Google, không bị sinh avatar chữ cái đầu đè lên
+                "hashed_password_123".equals(user.getPasswordHash())
+        ));
     }
 }

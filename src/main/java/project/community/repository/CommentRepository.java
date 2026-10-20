@@ -9,10 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
-    @EntityGraph(attributePaths = {"author", "reactions"})
+    @EntityGraph(attributePaths = {"author", "reactions", "reactions.user"})
     List<Comment> findByPostIdOrderByCreatedAtAsc(UUID postId);
 
     @Override
-    @EntityGraph(attributePaths = {"author", "reactions"})
+    @EntityGraph(attributePaths = {"author", "reactions", "reactions.user"})
     Optional<Comment> findById(UUID id);
 }
