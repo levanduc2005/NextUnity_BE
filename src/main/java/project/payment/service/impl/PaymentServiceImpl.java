@@ -57,6 +57,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${payos.cancel-url}")
     private String cancelUrl;
 
+    private static final long PAYMENT_EXPIRE_MINUTES = 1;
+
     @Override
     @Transactional
     public CreatePaymentResponse createPayment(CreatePaymentRequest request) {
@@ -65,31 +67,39 @@ public class PaymentServiceImpl implements PaymentService {
         SubscriptionPlan plan = request.plan();
 
         // 1. Kiểm tra nếu người dùng đã có giao dịch PENDING trước đó
-        var pendingOpt = paymentRepository.findFirstByUserIdAndStatusOrderByCreatedAtDesc(currentUserId, PaymentStatus.PENDING);
+        var pendingOpt = paymentRepository.findFirstByUserIdAndStatusOrderByCreatedAtDesc(currentUserId,
+                PaymentStatus.PENDING);
         if (pendingOpt.isPresent()) {
             Payment pending = pendingOpt.get();
-            try {
-                PaymentLink linkInfo = payOS.paymentRequests().get(pending.getOrderCode());
-                if (linkInfo.getStatus() == PaymentLinkStatus.PAID) {
-                    activateUserSubscription(currentUser, pending.getPlan());
-                    pending.setStatus(PaymentStatus.PAID);
-                    paymentRepository.save(pending);
-                    throw new AppException(ErrorCode.PAYMENT_ALREADY_PAID);
-                } else if (linkInfo.getStatus() == PaymentLinkStatus.PENDING) {
-                    if (pending.getPlan() == plan) {
-                        return paymentMapper.toCreateResponse(pending);
+            // Nếu đơn cũ đã hết hạn thì tự động hủy và tạo đơn mới
+            if (pending.getExpiresAt() != null && pending.getExpiresAt().isBefore(Instant.now())) {
+                pending.setStatus(PaymentStatus.CANCELLED);
+                paymentRepository.save(pending);
+            } else {
+                try {
+                    PaymentLink linkInfo = payOS.paymentRequests().get(pending.getOrderCode());
+                    if (linkInfo.getStatus() == PaymentLinkStatus.PAID) {
+                        activateUserSubscription(currentUser, pending.getPlan());
+                        pending.setStatus(PaymentStatus.PAID);
+                        paymentRepository.save(pending);
+                        throw new AppException(ErrorCode.PAYMENT_ALREADY_PAID);
+                    } else if (linkInfo.getStatus() == PaymentLinkStatus.PENDING) {
+                        if (pending.getPlan() == plan) {
+                            return paymentMapper.toCreateResponse(pending);
+                        } else {
+                            pending.setStatus(PaymentStatus.CANCELLED);
+                            paymentRepository.save(pending);
+                        }
                     } else {
                         pending.setStatus(PaymentStatus.CANCELLED);
                         paymentRepository.save(pending);
                     }
-                } else {
-                    pending.setStatus(PaymentStatus.CANCELLED);
-                    paymentRepository.save(pending);
+                } catch (AppException e) {
+                    throw e;
+                } catch (Exception e) {
+                    log.warn("Không thể kiểm tra đơn pending cũ (mã {}), tiến hành tạo đơn mới: {}",
+                            pending.getOrderCode(), e.getMessage());
                 }
-            } catch (AppException e) {
-                throw e;
-            } catch (Exception e) {
-                log.warn("Không thể kiểm tra đơn pending cũ (mã {}), tiến hành tạo đơn mới: {}", pending.getOrderCode(), e.getMessage());
             }
         }
 
@@ -99,6 +109,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 3. Gọi SDK PayOS để tạo link thanh toán
         try {
+            Instant expiresAt = Instant.now().plus(PAYMENT_EXPIRE_MINUTES, ChronoUnit.MINUTES);
+            long expiredAtEpochSeconds = expiresAt.getEpochSecond();
+
             PaymentLinkItem item = PaymentLinkItem.builder()
                     .name(plan.getName())
                     .price(plan.getPrice())
@@ -112,6 +125,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .returnUrl(returnUrl)
                     .cancelUrl(cancelUrl)
                     .item(item)
+                    .expiredAt(expiredAtEpochSeconds)
                     .build();
 
             CreatePaymentLinkResponse payOSResponse = payOS.paymentRequests().create(payOSRequest);
@@ -125,6 +139,7 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setStatus(PaymentStatus.PENDING);
             payment.setPlan(plan);
             payment.setUser(currentUser);
+            payment.setExpiresAt(expiresAt);
 
             paymentRepository.save(payment);
 

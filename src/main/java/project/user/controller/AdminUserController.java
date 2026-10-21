@@ -17,13 +17,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class AdminUserController {
 
     private final UserService userService;
-
-    public AdminUserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public ApiResponse<Page<UserResponse>> getAllUsers(

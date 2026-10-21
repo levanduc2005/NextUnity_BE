@@ -8,6 +8,9 @@ import project.payment.entity.enums.SubscriptionPlan;
 import project.shared.common.BaseEntity;
 import project.user.entity.User;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 @Entity
 @Table(
         name = "payments",
@@ -40,7 +43,20 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private SubscriptionPlan plan;
 
+    @Column(name = "expires_at")
+    private Instant expiresAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Instant getExpiresAt() {
+        if (expiresAt != null) {
+            return expiresAt;
+        }
+        if (getCreatedAt() != null) {
+            return getCreatedAt().plus(15, ChronoUnit.MINUTES);
+        }
+        return Instant.now().plus(15, ChronoUnit.MINUTES);
+    }
 }
