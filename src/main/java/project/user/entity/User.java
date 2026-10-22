@@ -38,9 +38,6 @@ public class User extends SoftDeleteEntity {
     private String avatarUrl;
 
     @Column(nullable = false)
-    private Integer points = 0;
-
-    @Column(nullable = false)
     private Integer streak = 0;
 
     @Enumerated(EnumType.STRING)

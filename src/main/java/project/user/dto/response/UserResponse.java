@@ -13,7 +13,6 @@ public record UserResponse(
         String university,
         String studentId,
         String avatarUrl,
-        Integer points,
         Integer streak,
         UserGender gender,
         String genderName,
