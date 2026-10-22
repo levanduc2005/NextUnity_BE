@@ -13,6 +13,7 @@ import project.shared.response.ApiResponse;
 import project.user.controller.AdminUserController;
 import project.user.dto.response.UserResponse;
 import project.user.entity.enums.SubscriptionTier;
+import project.user.entity.enums.UserGender;
 import project.user.service.UserService;
 
 import java.util.List;
@@ -44,9 +45,8 @@ class AdminUserControllerTest {
                 "FPT University",
                 "SE123456",
                 "https://avatar.url",
-                100,
                 5,
-                null,
+                UserGender.MALE,
                 "Nam",
                 null,
                 18,
