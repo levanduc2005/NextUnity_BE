@@ -23,6 +23,8 @@ public interface CourseService {
 
     Page<CourseSummaryResponse> searchCourses(CourseCategory category, CourseDifficulty difficulty, String search, Pageable pageable);
 
+    List<CourseSummaryResponse> getPopularCourses(int limit);
+
     List<CourseSummaryResponse> getMyCreatedCourses();
 
     CourseSummaryResponse updateCourse(UUID id, UpdateCourseRequest request);

@@ -63,6 +63,14 @@ public class CourseController {
         return ApiResponse.success(response, "Lấy danh sách khóa học của tôi thành công");
     }
 
+    @GetMapping("/popular")
+    public ApiResponse<List<CourseSummaryResponse>> getPopularCourses(
+            @RequestParam(defaultValue = "5") int limit
+    ) {
+        List<CourseSummaryResponse> response = courseService.getPopularCourses(limit);
+        return ApiResponse.success(response, "Lấy danh sách khóa học nổi bật thành công");
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<CourseDetailResponse> getCourseById(@PathVariable UUID id) {
         CourseDetailResponse response = courseService.getCourseById(id);
