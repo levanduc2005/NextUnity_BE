@@ -16,6 +16,7 @@ import project.payment.entity.enums.PaymentStatus;
 import project.payment.entity.enums.SubscriptionPlan;
 import project.payment.mapper.PaymentMapper;
 import project.payment.repository.PaymentRepository;
+import project.payment.service.PaymentNotificationService;
 import project.payment.service.PaymentService;
 import project.shared.error.ErrorCode;
 import project.shared.exception.AppException;
@@ -48,7 +49,10 @@ public class PaymentServiceImpl implements PaymentService {
     private final PayOS payOS;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+
     private final UserService userService;
+    private final PaymentNotificationService paymentNotificationService;
+
     private final PaymentMapper paymentMapper;
 
     @Value("${payos.return-url}")
@@ -57,7 +61,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${payos.cancel-url}")
     private String cancelUrl;
 
-    private static final long PAYMENT_EXPIRE_MINUTES = 1;
+    @Value("${payment.expire-minutes}")
+    private long paymentExpireMinutes;
 
     @Override
     @Transactional
@@ -109,7 +114,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 3. Gọi SDK PayOS để tạo link thanh toán
         try {
-            Instant expiresAt = Instant.now().plus(PAYMENT_EXPIRE_MINUTES, ChronoUnit.MINUTES);
+            Instant expiresAt = Instant.now().plus(paymentExpireMinutes, ChronoUnit.MINUTES);
             long expiredAtEpochSeconds = expiresAt.getEpochSecond();
 
             PaymentLinkItem item = PaymentLinkItem.builder()
@@ -178,7 +183,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus(PaymentStatus.PAID);
         activateUserSubscription(payment.getUser(), payment.getPlan());
         paymentRepository.save(payment);
-        log.info("Kích hoạt thành công gói {} cho user {} từ Webhook", payment.getPlan(), payment.getUser().getEmail());
+
+        paymentNotificationService.notifyPaymentSuccess(orderCode, paymentMapper.toResponse(payment));
     }
 
     @Override
@@ -194,6 +200,8 @@ public class PaymentServiceImpl implements PaymentService {
                     payment.setStatus(PaymentStatus.PAID);
                     activateUserSubscription(payment.getUser(), payment.getPlan());
                     paymentRepository.save(payment);
+
+                    paymentNotificationService.notifyPaymentSuccess(orderCode, paymentMapper.toResponse(payment));
                 } else if (linkInfo.getStatus() == PaymentLinkStatus.CANCELLED) {
                     payment.setStatus(PaymentStatus.CANCELLED);
                     paymentRepository.save(payment);

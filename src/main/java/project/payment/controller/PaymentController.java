@@ -5,13 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import project.payment.dto.request.CreatePaymentRequest;
 import project.payment.dto.response.CreatePaymentResponse;
 import project.payment.dto.response.PaymentResponse;
 import project.payment.dto.response.SubscriptionPlanResponse;
+import project.payment.service.PaymentNotificationService;
 import project.payment.service.PaymentService;
 import project.shared.response.ApiResponse;
 import vn.payos.model.webhooks.Webhook;
@@ -25,6 +28,8 @@ import java.util.List;
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    private final PaymentNotificationService paymentNotificationService;
 
     @GetMapping("/plans")
     public ApiResponse<List<SubscriptionPlanResponse>> getAvailablePlans() {
@@ -59,5 +64,11 @@ public class PaymentController {
     public ApiResponse<Page<PaymentResponse>> getMyPaymentHistory(Pageable pageable) {
         Page<PaymentResponse> response = paymentService.getMyPaymentHistory(pageable);
         return ApiResponse.success(response, "Lấy lịch sử thanh toán thành công");
+    }
+
+    @GetMapping(value = "/{orderCode}/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public SseEmitter subscribePaymentStatus(@PathVariable Long orderCode) {
+        return paymentNotificationService.subscribe(orderCode);
     }
 }
