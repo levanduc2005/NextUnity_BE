@@ -12,9 +12,6 @@ public record CreateLessonRequest(
 
         String content,
 
-        @NotNull(message = "Thứ tự sắp xếp không được để trống")
-        Integer orderIndex,
-
         @NotNull(message = "Loại bài học không được để trống")
         LessonType type,
 

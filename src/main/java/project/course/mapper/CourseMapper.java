@@ -68,7 +68,8 @@ public interface CourseMapper {
                                                 lesson.type(),
                                                 lesson.typeName(),
                                                 lesson.estimatedMinutes(),
-                                                completedSet.contains(lesson.id())))
+                                                completedSet.contains(lesson.id()),
+                                                lesson.quizId()))
                                         .toList()))
                 .toList();
 

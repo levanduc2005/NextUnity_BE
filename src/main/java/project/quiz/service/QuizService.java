@@ -20,9 +20,14 @@ public interface QuizService {
     TakeQuizResponse getQuizForStudent(UUID lessonId);
 
     /**
-     * Tạo bài kiểm tra gắn với một bài học.
+     * Lấy đề thi cho Học viên theo ID bài kiểm tra trực tiếp.
      */
-    QuizAdminResponse createQuiz(UUID lessonId, CreateQuizRequest request);
+    TakeQuizResponse getQuizByIdForStudent(UUID quizId);
+
+    /**
+     * Tạo bài kiểm tra trong Chương/Module (tạo đồng thời Lesson loại QUIZ và Quiz trong 1 API duy nhất).
+     */
+    QuizAdminResponse createQuiz(UUID moduleId, CreateQuizRequest request);
 
     /**
      * Cập nhật thông tin bài kiểm tra (tiêu đề, thời gian, điểm đạt,...).

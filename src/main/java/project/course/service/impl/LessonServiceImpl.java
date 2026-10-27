@@ -45,6 +45,10 @@ public class LessonServiceImpl implements LessonService {
 
         Lesson lesson = lessonMapper.toEntity(request);
         lesson.setModule(module);
+
+        int nextOrder = lessonRepository.countByModuleId(moduleId) + 1;
+        lesson.setOrderIndex(nextOrder);
+
         lesson = lessonRepository.save(lesson);
 
         Course course = module.getCourse();

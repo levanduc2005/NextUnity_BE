@@ -11,7 +11,7 @@ VALUES
     -- Course 1, Module 1 (Introduction to AI)
     ('e2000000-0000-0000-0000-000000000001', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000001', 'What is AI?', 'Artificial intelligence is the simulation of human intelligence processes by machines, especially computer systems.', 1, 'VIDEO', 10, 'https://www.youtube.com/watch?v=JMUxmLyrhSk'),
     ('e2000000-0000-0000-0000-000000000002', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000001', 'History of AI', 'The history of AI dates back to antiquity, with modern AI founded at Dartmouth College in 1956.', 2, 'TEXT', 15, NULL),
-    ('e2000000-0000-0000-0000-000000000003', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000001', 'Types of AI', 'Explore Narrow AI (Weak AI), General AI (Strong AI), and Superintelligent AI.', 3, 'INTERACTIVE', 20, NULL),
+    ('e2000000-0000-0000-0000-000000000003', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000001', 'Types of AI', 'Explore Narrow AI (Weak AI), General AI (Strong AI), and Superintelligent AI.', 3, 'QUIZ', 20, NULL),
     ('e2000000-0000-0000-0000-000000000004', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000001', 'AI in Everyday Life', 'Recommendation engines on Netflix, navigation in autonomous vehicles, and virtual assistants.', 4, 'TEXT', 12, NULL),
     ('e2000000-0000-0000-0000-000000000005', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000001', 'Ethical Considerations in AI', 'Addressing bias in machine learning models, accountability, and automated decision-making ethics.', 5, 'TEXT', 18, NULL),
 
@@ -25,7 +25,7 @@ VALUES
     -- Course 2, Module 1 (Introduction to Databases)
     ('e2000000-0000-0000-0000-000000000009', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000004', 'What is a Database?', 'Organized collection of structured information stored electronically and managed by a DBMS.', 1, 'VIDEO', 12, 'https://www.youtube.com/watch?v=wR0jg0eQsZA'),
     ('e2000000-0000-0000-0000-000000000010', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000004', 'File Systems vs DBMS', 'Comparing concurrency control, ACID transaction isolation, crash recovery, and redundancy.', 2, 'TEXT', 15, NULL),
-    ('e2000000-0000-0000-0000-000000000011', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000004', 'Relational Model', 'Structuring data using tables, tuples, primary keys, foreign keys and integrity constraints.', 3, 'INTERACTIVE', 20, NULL),
+    ('e2000000-0000-0000-0000-000000000011', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000004', 'Relational Model', 'Structuring data using tables, tuples, primary keys, foreign keys and integrity constraints.', 3, 'QUIZ', 20, NULL),
     ('e2000000-0000-0000-0000-000000000012', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000004', 'NoSQL Databases', 'Document stores, key-value caches, and graph databases for high scalability.', 4, 'TEXT', 15, NULL),
 
     -- Course 2, Module 2 (SQL Fundamentals)
@@ -37,7 +37,7 @@ VALUES
 
     -- Course 3, Module 1 (Introduction to Data Structures)
     ('e2000000-0000-0000-0000-000000000016', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000007', 'What is a Data Structure?', 'Memory organization concepts and choosing suitable structures for optimal algorithms.', 1, 'VIDEO', 15, 'https://www.youtube.com/watch?v=RBSGKlAvoiM'),
-    ('e2000000-0000-0000-0000-000000000017', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000007', 'Arrays vs Linked Lists', 'Core differences between contiguous memory allocations vs pointer-linked heap nodes.', 2, 'INTERACTIVE', 20, NULL),
+    ('e2000000-0000-0000-0000-000000000017', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000007', 'Arrays vs Linked Lists', 'Core differences between contiguous memory allocations vs pointer-linked heap nodes.', 2, 'QUIZ', 20, NULL),
     ('e2000000-0000-0000-0000-000000000018', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000007', 'Time Complexity (Big O)', 'Asymptotic runtime bounds: O(1), O(log N), O(N), O(N log N), and O(N^2).', 3, 'TEXT', 25, NULL),
     ('e2000000-0000-0000-0000-000000000019', NOW(), NOW(), NULL, 'e1000000-0000-0000-0000-000000000007', 'Space Complexity', 'Understanding auxiliary memory footprint and stack overhead in recursion.', 4, 'TEXT', 15, NULL),
 

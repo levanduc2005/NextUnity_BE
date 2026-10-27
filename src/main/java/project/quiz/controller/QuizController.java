@@ -32,13 +32,18 @@ public class QuizController {
         return ApiResponse.success(response, "Lấy đề thi thành công");
     }
 
-    @PostMapping("/api/lessons/{lessonId}/quiz")
+    @GetMapping("/api/quizzes/{quizId}")
+    public ApiResponse<TakeQuizResponse> getQuizByIdForStudent(@PathVariable UUID quizId) {
+        TakeQuizResponse response = quizService.getQuizByIdForStudent(quizId);
+        return ApiResponse.success(response, "Lấy đề thi thành công");
+    }
+
+    @PostMapping("/api/modules/{moduleId}/quizzes")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<QuizAdminResponse> createQuiz(
-            @PathVariable UUID lessonId,
-            @Valid @RequestBody CreateQuizRequest request
-    ) {
-        QuizAdminResponse response = quizService.createQuiz(lessonId, request);
+            @PathVariable UUID moduleId,
+            @Valid @RequestBody CreateQuizRequest request) {
+        QuizAdminResponse response = quizService.createQuiz(moduleId, request);
         return ApiResponse.success(response, "Tạo bài kiểm tra thành công");
     }
 
@@ -46,8 +51,7 @@ public class QuizController {
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<QuizAdminResponse> updateQuiz(
             @PathVariable UUID quizId,
-            @Valid @RequestBody UpdateQuizRequest request
-    ) {
+            @Valid @RequestBody UpdateQuizRequest request) {
         QuizAdminResponse response = quizService.updateQuiz(quizId, request);
         return ApiResponse.success(response, "Cập nhật bài kiểm tra thành công");
     }

@@ -16,5 +16,6 @@ public record LessonDetailResponse(
         Integer estimatedMinutes,
         String videoUrl,
         Instant createdAt,
-        Boolean isCompleted
+        Boolean isCompleted,
+        UUID quizId
 ) {}

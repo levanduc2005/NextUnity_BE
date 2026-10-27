@@ -11,5 +11,6 @@ public record LessonSummaryResponse(
         LessonType type,
         String typeName,
         Integer estimatedMinutes,
-        Boolean isCompleted
+        Boolean isCompleted,
+        UUID quizId
 ) {}

@@ -3,8 +3,13 @@ package project.quiz.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.course.entity.Course;
 import project.course.entity.Lesson;
+import project.course.entity.Module;
+import project.course.entity.enums.LessonType;
+import project.course.repository.CourseRepository;
 import project.course.repository.LessonRepository;
+import project.course.repository.ModuleRepository;
 import project.course.validator.CourseAccessValidator;
 import project.quiz.dto.quiz.request.CreateQuizRequest;
 import project.quiz.dto.quiz.request.UpdateQuizRequest;
@@ -27,6 +32,8 @@ public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
     private final LessonRepository lessonRepository;
+    private final ModuleRepository moduleRepository;
+    private final CourseRepository courseRepository;
     private final CourseAccessValidator courseAccessValidator;
     private final QuizMapper quizMapper;
 
@@ -53,20 +60,53 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    @Transactional
-    public QuizAdminResponse createQuiz(UUID lessonId, CreateQuizRequest request) {
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(
-                () -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+    public TakeQuizResponse getQuizByIdForStudent(UUID quizId) {
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(
+                () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
 
-        if (quizRepository.existsByLessonId(lessonId)) {
-            throw new AppException(ErrorCode.QUIZ_ALREADY_EXISTS);
+        courseAccessValidator.validateAccessByLessonId(quiz.getLesson().getId());
+
+        if (quiz.getStatus() != QuizStatus.PUBLISHED) {
+            throw new AppException(ErrorCode.QUIZ_NOT_PUBLISHED);
         }
 
+        return quizMapper.toTakeQuizResponse(quiz);
+    }
+
+    @Override
+    @Transactional
+    public QuizAdminResponse createQuiz(UUID moduleId, CreateQuizRequest request) {
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new AppException(ErrorCode.MODULE_NOT_FOUND));
+
+        int orderIndex = lessonRepository.countByModuleId(moduleId) + 1;
+
+        // 1. Tạo bản ghi Lesson đại diện loại QUIZ trong Module
+        Lesson lesson = new Lesson();
+        lesson.setModule(module);
+        lesson.setTitle(request.title());
+        lesson.setContent(request.description());
+        lesson.setType(LessonType.QUIZ);
+        lesson.setOrderIndex(orderIndex);
+        lesson.setEstimatedMinutes(request.durationMinutes());
+        lesson = lessonRepository.save(lesson);
+
+        // 2. Tạo Quiz liên kết 1-1 với Lesson vừa tạo
         Quiz quiz = quizMapper.toEntity(request);
         quiz.setLesson(lesson);
         quiz.setStatus(QuizStatus.DRAFT);
+        quiz = quizRepository.save(quiz);
 
-        return quizMapper.toAdminResponse(quizRepository.save(quiz));
+        lesson.setQuiz(quiz);
+
+        // 3. Cập nhật tổng số bài học của khóa học
+        Course course = module.getCourse();
+        if (course != null && course.getTotalLessons() != null) {
+            course.setTotalLessons(course.getTotalLessons() + 1);
+            courseRepository.save(course);
+        }
+
+        return quizMapper.toAdminResponse(quiz);
     }
 
     @Override
@@ -105,6 +145,16 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(
                 () -> new AppException(ErrorCode.QUIZ_NOT_FOUND));
 
-        quizRepository.delete(quiz);
+        Lesson lesson = quiz.getLesson();
+        if (lesson != null) {
+            Course course = lesson.getCourse();
+            if (course != null && course.getTotalLessons() != null) {
+                course.setTotalLessons(Math.max(0, course.getTotalLessons() - 1));
+                courseRepository.save(course);
+            }
+            lessonRepository.delete(lesson);
+        } else {
+            quizRepository.delete(quiz);
+        }
     }
 }

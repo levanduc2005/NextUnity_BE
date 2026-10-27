@@ -1,7 +1,6 @@
 package project.course.dto.module.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateModuleRequest(
@@ -10,8 +9,5 @@ public record CreateModuleRequest(
         String title,
 
         @Size(max = 1000, message = "Mô tả chương học tối đa 1000 ký tự")
-        String description,
-
-        @NotNull(message = "Thứ tự sắp xếp không được để trống")
-        Integer orderIndex
+        String description
 ) {}

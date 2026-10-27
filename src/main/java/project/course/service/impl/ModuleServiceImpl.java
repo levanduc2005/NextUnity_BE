@@ -34,6 +34,7 @@ public class ModuleServiceImpl implements ModuleService {
 
         Module module = moduleMapper.toEntity(request);
         module.setCourse(course);
+        module.setOrderIndex(moduleRepository.countByCourseId(courseId) + 1);
 
         return moduleMapper.toResponse(moduleRepository.save(module));
     }

@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum LessonType {
     VIDEO("Video"),
     TEXT("Bài đọc"),
-    INTERACTIVE("Quiz");
+    QUIZ("Quiz");
 
     private final String displayName;
 }
-
