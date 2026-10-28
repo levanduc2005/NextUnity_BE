@@ -27,7 +27,9 @@ import project.user.service.UserService;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +68,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         enrollment.setProgressPercent(0);
         enrollment.setStatus(EnrollmentStatus.ENROLLED);
 
-        return enrollmentMapper.toResponse(enrollmentRepository.save(enrollment));
+        Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
+        String currentLessonTitle = findCurrentLessonTitle(currentUserId, courseId, savedEnrollment.getStatus());
+        return enrollmentMapper.toResponse(savedEnrollment, currentLessonTitle);
     }
 
     @Override
@@ -75,7 +79,14 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         return enrollmentRepository.findByUserIdOrderByCreatedAtDesc(currentUserId)
                 .stream()
-                .map(enrollmentMapper::toResponse)
+                .map(enrollment -> {
+                    String currentLessonTitle = findCurrentLessonTitle(
+                            currentUserId,
+                            enrollment.getCourse().getId(),
+                            enrollment.getStatus()
+                    );
+                    return enrollmentMapper.toResponse(enrollment, currentLessonTitle);
+                })
                 .toList();
     }
 
@@ -84,8 +95,42 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
 
         return enrollmentRepository.findByUserIdAndCourseId(currentUserId, courseId)
-                .map(enrollmentMapper::toResponse)
+                .map(enrollment -> {
+                    String currentLessonTitle = findCurrentLessonTitle(
+                            currentUserId,
+                            enrollment.getCourse().getId(),
+                            enrollment.getStatus()
+                    );
+                    return enrollmentMapper.toResponse(enrollment, currentLessonTitle);
+                })
                 .orElseThrow(() -> new AppException(ErrorCode.ENROLLMENT_NOT_FOUND));
+    }
+
+    private String findCurrentLessonTitle(UUID userId, UUID courseId, EnrollmentStatus status) {
+        if (status == EnrollmentStatus.COMPLETED) {
+            return "Đã hoàn thành khóa học";
+        }
+
+        List<Lesson> lessons = lessonRepository.findByModule_Course_IdOrderByOrderIndexAsc(courseId);
+        if (lessons.isEmpty()) {
+            return null;
+        }
+
+        List<LessonProgress> completedProgress = lessonProgressRepository
+                .findByUserIdAndLesson_Module_Course_Id(userId, courseId)
+                .stream()
+                .filter(lp -> lp.getStatus() == LessonProgressStatus.COMPLETED)
+                .toList();
+
+        Set<UUID> completedLessonIds = completedProgress.stream()
+                .map(lp -> lp.getLesson().getId())
+                .collect(Collectors.toSet());
+
+        return lessons.stream()
+                .filter(l -> !completedLessonIds.contains(l.getId()))
+                .findFirst()
+                .map(Lesson::getTitle)
+                .orElse(lessons.get(lessons.size() - 1).getTitle());
     }
 
     @Override

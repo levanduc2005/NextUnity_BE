@@ -24,7 +24,7 @@ public interface CommentMapper {
     void updateComment(UpdateCommentRequest request, @MappingTarget Comment comment);
 
     @Mapping(target = "postId", source = "comment.post.id")
-    @Mapping(target = "authorId", expression = "java(comment.getDeletedAt() == null ? comment.getAuthor().getId() : null)")
+    @Mapping(target = "authorId", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? comment.getAuthor().getId() : null)")
     @Mapping(target = "authorName", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? (comment.getAuthor().getFullName() != null && !comment.getAuthor().getFullName().isBlank() ? comment.getAuthor().getFullName() : \"[deleted]\") : \"[deleted]\")")
     @Mapping(target = "authorAvatar", expression = "java(comment.getDeletedAt() == null && comment.getAuthor() != null ? comment.getAuthor().getAvatarUrl() : null)")
     @Mapping(target = "content", expression = "java(comment.getDeletedAt() == null ? comment.getContent() : \"[bình luận đã bị xóa]\")")

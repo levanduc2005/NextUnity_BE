@@ -24,6 +24,7 @@ public interface CourseMapper {
     @Mapping(target = "creatorName", source = "creator.fullName")
     @Mapping(target = "categoryName", source = "category.displayName")
     @Mapping(target = "difficultyName", source = "difficulty.displayName")
+    @Mapping(target = "totalModules", expression = "java(course.getModules() != null ? course.getModules().size() : 0)")
     CourseSummaryResponse toSummaryResponse(Course course);
 
     @Mapping(target = "creatorId", source = "creator.id")

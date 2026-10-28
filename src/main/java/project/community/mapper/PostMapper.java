@@ -25,8 +25,6 @@ public interface PostMapper {
 
     void updatePost(UpdatePostRequest request, @MappingTarget Post post);
 
-    @Mapping(target = "communityId", ignore = true)
-    @Mapping(target = "communityName", ignore = true)
     @Mapping(target = "authorId", source = "post.author.id")
     @Mapping(target = "authorName", expression = "java(post.getAuthor() != null ? post.getAuthor().getFullName() : null)")
     @Mapping(target = "authorAvatar", source = "post.author.avatarUrl")

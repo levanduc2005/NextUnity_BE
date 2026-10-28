@@ -17,6 +17,7 @@ public record CourseSummaryResponse(
         String difficultyName,
         String thumbnailUrl,
         Integer totalLessons,
+        Integer totalModules,
         Boolean isPremium,
         UUID creatorId,
         String creatorName,

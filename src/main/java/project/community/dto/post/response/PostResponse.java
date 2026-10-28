@@ -9,8 +9,6 @@ import java.util.UUID;
 
 public record PostResponse(
         UUID id,
-        UUID communityId,
-        String communityName,
         UUID authorId,
         String authorName,
         String authorAvatar,

@@ -20,5 +20,6 @@ public record EnrollmentResponse(
         EnrollmentStatus status,
         Instant createdAt,
         Instant completedAt,
-        String instructorName
+        String instructorName,
+        String currentLessonTitle
 ) {}
