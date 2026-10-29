@@ -35,5 +35,30 @@ VALUES
     -- Member 4: Nguyen Van A (STUDENT - FREE)
     ('b0000000-0000-0000-0000-000000000005', NOW(), NOW(), NULL, 'a0000000-0000-0000-0000-000000000003', 'anv@fpt.edu.vn', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.',
      'Nguyen Van A', 'FPT HCM', 'SE150004', 'https://api.dicebear.com/7.x/avataaars/svg?seed=anv', 7, 'MALE', '2004-02-10', 19, 'Software Engineering', 'Freshman exploring the world of code.',
-     'FREE', NULL)
+     'FREE', NULL),
+
+    -- Member 5: Hoang Quoc Bao (STUDENT - PLUS)
+    ('b0000000-0000-0000-0000-000000000006', NOW() - INTERVAL '30 days', NOW(), NULL, 'a0000000-0000-0000-0000-000000000003', 'baohq@fpt.edu.vn', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.',
+     'Hoang Quoc Bao', 'FPT HN', 'HE160010', 'https://api.dicebear.com/7.x/avataaars/svg?seed=baohq', 25, 'MALE', '2001-04-12', 16, 'Software Engineering', 'Alumni K16 SE FPT Hanoi. Software Engineer @ FPT Software, Mentor SWP391.',
+     'PLUS', NOW() + INTERVAL '60 days'),
+
+    -- Member 6: Vu Thi Mai Chi (STUDENT - PLUS)
+    ('b0000000-0000-0000-0000-000000000007', NOW() - INTERVAL '30 days', NOW(), NULL, 'a0000000-0000-0000-0000-000000000003', 'chivtm@fpt.edu.vn', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.',
+     'Vu Thi Mai Chi', 'FPT HCM', 'SE170025', 'https://api.dicebear.com/7.x/avataaars/svg?seed=chivtm', 20, 'FEMALE', '2002-09-18', 17, 'Information Assurance', 'K17 IA FPT HCM. DSA enthusiast, ICPC competitor, TA CSD201.',
+     'PLUS', NOW() + INTERVAL '60 days'),
+
+    -- Member 7: Dang Thai Son (STUDENT - FREE)
+    ('b0000000-0000-0000-0000-000000000008', NOW() - INTERVAL '30 days', NOW(), NULL, 'a0000000-0000-0000-0000-000000000003', 'sondt@fpt.edu.vn', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.',
+     'Dang Thai Son', 'FPT Quy Nhon', 'QE180015', 'https://api.dicebear.com/7.x/avataaars/svg?seed=sondt', 18, 'MALE', '2003-03-22', 18, 'Artificial Intelligence', 'K18 AI FPT Quy Nhon. Machine Learning & Python passionate.',
+     'FREE', NULL),
+
+    -- Member 8: Nguyen Hoang Nam (STUDENT - FREE)
+    ('b0000000-0000-0000-0000-000000000009', NOW() - INTERVAL '30 days', NOW(), NULL, 'a0000000-0000-0000-0000-000000000003', 'namnh@fpt.edu.vn', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.',
+     'Nguyen Hoang Nam', 'FPT Can Tho', 'CE170030', 'https://api.dicebear.com/7.x/avataaars/svg?seed=namnh', 14, 'MALE', '2002-12-05', 17, 'Software Engineering', 'K17 SE FPT Can Tho. Full-stack Web & Database developer.',
+     'FREE', NULL),
+
+    -- Member 9: Tran Bao Ngoc (STUDENT - PLUS)
+    ('b0000000-0000-0000-0000-000000000010', NOW() - INTERVAL '30 days', NOW(), NULL, 'a0000000-0000-0000-0000-000000000003', 'ngoctb@fpt.edu.vn', '$2a$12$RBcyryCgZEe7ta5MMeX4huiO8V8txscrw/FunPgjW9bnFtRcTF4H.',
+     'Tran Bao Ngoc', 'FPT HCM', 'SE180050', 'https://api.dicebear.com/7.x/avataaars/svg?seed=ngoctb', 22, 'FEMALE', '2003-07-14', 18, 'Software Engineering', 'K18 SE FPT HCM. UI/UX design and Frontend lover.',
+     'PLUS', NOW() + INTERVAL '60 days')
     ON CONFLICT (id) DO NOTHING;

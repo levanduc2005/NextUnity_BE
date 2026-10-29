@@ -36,6 +36,27 @@ VALUES
         'Quiz: So sánh Mảng (Array) và Danh sách liên kết (Linked List)',
         'Đánh giá hiểu biết về cấu trúc bộ nhớ, độ phức tạp thuật toán và trường hợp sử dụng phù hợp.',
         70, 15, 'PUBLISHED'
+    ),
+    (
+        'e7000000-0000-0000-0000-000000000037', NOW(), NOW(),
+        'e2000000-0000-0000-0000-000000000037',
+        'Quiz: Kiểm tra trọng tâm Con trỏ & Bộ nhớ trong C (Ôn thi FE)',
+        'Đánh giá hiểu biết cốt lõi về con trỏ, toán tử giải tham chiếu, cấp phát bộ nhớ động malloc/free và thao tác mảng.',
+        70, 15, 'PUBLISHED'
+    ),
+    (
+        'e7000000-0000-0000-0000-000000000042', NOW(), NOW(),
+        'e2000000-0000-0000-0000-000000000042',
+        'Quiz: Kiểm tra 4 tính chất OOP & Interface trong Java (Ôn thi FE)',
+        'Đánh giá kiến thức về tính kế thừa, tính đa hình, cơ chế liên kết động (dynamic binding) và Interface trong Java.',
+        75, 15, 'PUBLISHED'
+    ),
+    (
+        'e7000000-0000-0000-0000-000000000051', NOW(), NOW(),
+        'e2000000-0000-0000-0000-000000000051',
+        'Quiz: Kiểm tra kiến trúc Servlet, JSP Lifecycle & Quản lý Session (Ôn thi FE)',
+        'Đánh giá hiểu biết về vòng đời Servlet, phân biệt forward và sendRedirect, kiến trúc MVC 2 và quản lý phiên người dùng.',
+        75, 15, 'PUBLISHED'
     )
 ON CONFLICT (id) DO NOTHING;
 
@@ -122,6 +143,75 @@ VALUES
         'Thao tác chèn phần tử mới vào đầu Danh sách liên kết đơn (Singly Linked List) mất độ phức tạp thời gian là:',
         'SINGLE_CHOICE', 10.0, 2,
         'Chèn vào đầu danh sách liên kết chỉ cần trỏ next của node mới vào head cũ và gán head mới, luôn đạt O(1).'
+    ),
+
+    -- Quiz 5 Questions (PRF192 - Con trỏ & Bộ nhớ trong C)
+    (
+        'e8000000-0000-0000-0000-000000000011', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000037',
+        'Trong ngôn ngữ C, cho đoạn mã: int a = 10; int *p = &a; *p = 20; Giá trị của biến a sau các câu lệnh trên là bao nhiêu?',
+        'SINGLE_CHOICE', 10.0, 1,
+        'Con trỏ p trỏ tới địa chỉ của biến a. Phép gán *p = 20 thông qua toán tử giải tham chiếu sẽ thay đổi trực tiếp giá trị của a thành 20.'
+    ),
+    (
+        'e8000000-0000-0000-0000-000000000012', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000037',
+        'Hàm nào trong thư viện stdlib.h được sử dụng để giải phóng vùng nhớ đã cấp phát động nhằm tránh rò rỉ bộ nhớ (Memory Leak)?',
+        'SINGLE_CHOICE', 10.0, 2,
+        'Hàm free(ptr) dùng để hoàn trả vùng nhớ động được cấp phát bởi malloc, calloc hoặc realloc về cho hệ điều hành.'
+    ),
+    (
+        'e8000000-0000-0000-0000-000000000013', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000037',
+        'Những phát biểu nào sau đây là ĐÚNG về con trỏ và mảng trong ngôn ngữ C? (Chọn tất cả đáp án đúng)',
+        'MULTIPLE_CHOICE', 10.0, 3,
+        'Tên mảng đại diện cho địa chỉ phần tử đầu tiên (&arr[0]). Phép truy xuất *(arr + i) hoàn toàn tương đương với arr[i].'
+    ),
+
+    -- Quiz 6 Questions (PRO192 - OOP trong Java)
+    (
+        'e8000000-0000-0000-0000-000000000014', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000042',
+        'Từ khóa nào trong Java được sử dụng để một lớp con kế thừa lại các thuộc tính và phương thức từ một lớp cha?',
+        'SINGLE_CHOICE', 10.0, 1,
+        'Java sử dụng từ khóa extends để kế thừa lớp cha và implements để thực thi Interface.'
+    ),
+    (
+        'e8000000-0000-0000-0000-000000000015', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000042',
+        'Một Interface trong Java (từ phiên bản Java 8 trở đi) có thể chứa những thành phần nào sau đây? (Chọn tất cả đáp án đúng)',
+        'MULTIPLE_CHOICE', 10.0, 2,
+        'Từ Java 8, Interface có thể chứa phương thức trừu tượng, hằng số public static final, và phương thức có phần thân mặc định với từ khóa default hoặc static.'
+    ),
+    (
+        'e8000000-0000-0000-0000-000000000016', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000042',
+        'Trong Java, một lớp có thể kế thừa trực tiếp (extends) từ bao nhiêu lớp cha?',
+        'SINGLE_CHOICE', 10.0, 3,
+        'Java chỉ hỗ trợ đơn kế thừa giữa các lớp (Duy nhất 1 lớp cha) nhằm tránh xung đột đa kế thừa (Diamond Problem).'
+    ),
+
+    -- Quiz 7 Questions (PRJ301 - Servlet, JSP & MVC)
+    (
+        'e8000000-0000-0000-0000-000000000017', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000051',
+        'Trong vòng đời (Lifecycle) của Java Servlet, phương thức init() được gọi bao nhiêu lần?',
+        'SINGLE_CHOICE', 10.0, 1,
+        'Phương thức init() chỉ được gọi duy nhất 1 lần khi Servlet được nạp và khởi tạo lần đầu bởi Servlet Container.'
+    ),
+    (
+        'e8000000-0000-0000-0000-000000000018', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000051',
+        'Sự khác biệt cốt lõi giữa RequestDispatcher.forward() và HttpServletResponse.sendRedirect() là gì?',
+        'SINGLE_CHOICE', 10.0, 2,
+        'forward() chuyển tiếp nội bộ trên Server nên giữ nguyên Request và URL không đổi; sendRedirect() gửi mã chuyển hướng về Browser yêu cầu gửi Request mới nên URL thay đổi.'
+    ),
+    (
+        'e8000000-0000-0000-0000-000000000019', NOW(), NOW(),
+        'e7000000-0000-0000-0000-000000000051',
+        'Trong mô hình kiến trúc MVC Model 2 của Java Web, thành phần nào giữ vai trò là "Controller" tiếp nhận và điều phối luồng xử lý?',
+        'SINGLE_CHOICE', 10.0, 3,
+        'Trong Java Web MVC, Servlet đóng vai trò Controller tiếp nhận request, gọi Model/DAO lấy dữ liệu và chuyển tiếp sang JSP (View) để hiển thị giao diện.'
     )
 ON CONFLICT (id) DO NOTHING;
 
@@ -180,5 +270,59 @@ VALUES
     -- Options for Question 10 (Linked List Insert Head)
     ('e9000000-0000-0000-0000-000000000028', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000010', 'O(1)', true, 1),
     ('e9000000-0000-0000-0000-000000000029', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000010', 'O(N)', false, 2),
-    ('e9000000-0000-0000-0000-000000000030', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000010', 'O(N^2)', false, 3)
+    ('e9000000-0000-0000-0000-000000000030', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000010', 'O(N^2)', false, 3),
+
+    -- Options for Question 11 (PRF192 - Con trỏ a=10, *p=20)
+    ('e9000000-0000-0000-0000-000000000031', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000011', '20', true, 1),
+    ('e9000000-0000-0000-0000-000000000032', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000011', '10', false, 2),
+    ('e9000000-0000-0000-0000-000000000033', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000011', 'Địa chỉ ô nhớ của biến a', false, 3),
+    ('e9000000-0000-0000-0000-000000000034', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000011', 'Lỗi biên dịch mã nguồn', false, 4),
+
+    -- Options for Question 12 (PRF192 - Hàm giải phóng bộ nhớ)
+    ('e9000000-0000-0000-0000-000000000035', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000012', 'free()', true, 1),
+    ('e9000000-0000-0000-0000-000000000036', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000012', 'delete()', false, 2),
+    ('e9000000-0000-0000-0000-000000000037', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000012', 'clear()', false, 3),
+    ('e9000000-0000-0000-0000-000000000038', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000012', 'release()', false, 4),
+
+    -- Options for Question 13 (PRF192 - Con trỏ và Mảng)
+    ('e9000000-0000-0000-0000-000000000039', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000013', 'Tên mảng đại diện cho địa chỉ của phần tử đầu tiên (&arr[0])', true, 1),
+    ('e9000000-0000-0000-0000-000000000040', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000013', 'Biểu thức *(arr + i) tương đương hoàn toàn với arr[i]', true, 2),
+    ('e9000000-0000-0000-0000-000000000041', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000013', 'Có thể gán arr = ptr để thay đổi địa chỉ của cả mảng', false, 3),
+    ('e9000000-0000-0000-0000-000000000042', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000013', 'Toán tử sizeof của biến con trỏ trên hệ thống 64-bit thường trả về 8 bytes', true, 4),
+
+    -- Options for Question 14 (PRO192 - Kế thừa trong Java)
+    ('e9000000-0000-0000-0000-000000000043', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000014', 'extends', true, 1),
+    ('e9000000-0000-0000-0000-000000000044', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000014', 'implements', false, 2),
+    ('e9000000-0000-0000-0000-000000000045', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000014', 'inherits', false, 3),
+    ('e9000000-0000-0000-0000-000000000046', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000014', 'super', false, 4),
+
+    -- Options for Question 15 (PRO192 - Interface Java 8+)
+    ('e9000000-0000-0000-0000-000000000047', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000015', 'Các phương thức trừu tượng (Abstract methods)', true, 1),
+    ('e9000000-0000-0000-0000-000000000048', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000015', 'Các hằng số mặc định public static final', true, 2),
+    ('e9000000-0000-0000-0000-000000000049', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000015', 'Phương thức mặc định có thân hàm với từ khóa default', true, 3),
+    ('e9000000-0000-0000-0000-000000000050', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000015', 'Hàm khởi tạo Constructor để tạo instance trực tiếp', false, 4),
+
+    -- Options for Question 16 (PRO192 - Số lượng lớp cha)
+    ('e9000000-0000-0000-0000-000000000051', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000016', 'Duy nhất 1 lớp cha trực tiếp', true, 1),
+    ('e9000000-0000-0000-0000-000000000052', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000016', 'Không giới hạn số lượng lớp cha', false, 2),
+    ('e9000000-0000-0000-0000-000000000053', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000016', 'Tối đa 2 lớp cha', false, 3),
+    ('e9000000-0000-0000-0000-000000000054', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000016', 'Tùy thuộc vào phiên bản JDK sử dụng', false, 4),
+
+    -- Options for Question 17 (PRJ301 - init() lifecycle)
+    ('e9000000-0000-0000-0000-000000000055', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000017', 'Duy nhất 1 lần khi Servlet được khởi tạo', true, 1),
+    ('e9000000-0000-0000-0000-000000000056', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000017', 'Mỗi khi có HTTP Request mới gửi đến', false, 2),
+    ('e9000000-0000-0000-0000-000000000057', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000017', 'Mỗi khi người dùng Refresh lại trình duyệt', false, 3),
+    ('e9000000-0000-0000-0000-000000000058', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000017', 'Được gọi định kỳ theo chu kỳ của Web Container', false, 4),
+
+    -- Options for Question 18 (PRJ301 - forward vs sendRedirect)
+    ('e9000000-0000-0000-0000-000000000059', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000018', 'forward() chuyển tiếp nội bộ trên Server (URL không đổi), sendRedirect() yêu cầu Browser gửi Request mới (URL thay đổi)', true, 1),
+    ('e9000000-0000-0000-0000-000000000060', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000018', 'forward() làm thay đổi URL trên thanh địa chỉ, sendRedirect() giữ nguyên URL', false, 2),
+    ('e9000000-0000-0000-0000-000000000061', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000018', 'Cả hai phương thức đều chia sẻ chung request attributes', false, 3),
+    ('e9000000-0000-0000-0000-000000000062', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000018', 'sendRedirect() chỉ dùng được cho phương thức HTTP POST', false, 4),
+
+    -- Options for Question 19 (PRJ301 - Controller trong MVC)
+    ('e9000000-0000-0000-0000-000000000063', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000019', 'Java Servlet', true, 1),
+    ('e9000000-0000-0000-0000-000000000064', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000019', 'Trang JSP (JavaServer Pages)', false, 2),
+    ('e9000000-0000-0000-0000-000000000065', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000019', 'Lớp DAO (Data Access Object)', false, 3),
+    ('e9000000-0000-0000-0000-000000000066', NOW(), NOW(), 'e8000000-0000-0000-0000-000000000019', 'Tập tin cấu hình deployment descriptor (web.xml)', false, 4)
 ON CONFLICT (id) DO NOTHING;
