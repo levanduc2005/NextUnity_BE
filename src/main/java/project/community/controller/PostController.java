@@ -25,6 +25,14 @@ public class PostController {
         return ApiResponse.success(response, "Đăng bài viết thành công");
     }
 
+    @GetMapping("/popular")
+    public ApiResponse<List<PostResponse>> getPopularPosts(
+            @RequestParam(defaultValue = "3") int limit
+    ) {
+        List<PostResponse> response = postService.getPopularPosts(limit);
+        return ApiResponse.success(response, "Lấy danh sách bài viết nổi bật thành công");
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<PostResponse> getPostById(@PathVariable UUID id) {
         PostResponse response = postService.getPostById(id);

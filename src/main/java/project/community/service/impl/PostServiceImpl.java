@@ -1,6 +1,10 @@
 package project.community.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.community.dto.post.request.CreatePostRequest;
@@ -37,6 +41,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "popularPosts", allEntries = true)
     public PostResponse createPost(CreatePostRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         User author = userService.getUserById(userId);
@@ -80,7 +85,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Cacheable(value = "popularPosts", key = "#limit")
+    public List<PostResponse> getPopularPosts(int limit) {
+        UUID currentUserId = SecurityUtils.getOptionalCurrentUserId().orElse(null);
+        Pageable pageable = PageRequest.of(0, Math.max(1, limit));
+        return postRepository.findTrendingPosts(pageable).stream()
+                .map(p -> postMapper.toResponse(p, currentUserId))
+                .toList();
+    }
+
+    @Override
     @Transactional
+    @CacheEvict(value = "popularPosts", allEntries = true)
     public PostResponse updatePost(UUID id, UpdatePostRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
         Post post = postRepository.findById(id)
@@ -99,6 +115,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "popularPosts", allEntries = true)
     public void deletePost(UUID id) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
         Post post = postRepository.findById(id)

@@ -114,11 +114,7 @@ spring.datasource.password=your_password
 ```
 
 ### 3. Nạp Dữ Liệu Mẫu (Seed Data)
-Dự án cung cấp sẵn các tập lệnh SQL chất lượng cao tại thư mục `src/main/resources/sql/`:
-- [`01_users.sql`](file:///e:/Workspace/Mon_Hoc_FPT/EXE/NextUnity_BE/src/main/resources/sql/01_users.sql): Tài khoản mẫu (Admin, Giảng viên Dr. Phong, Sinh viên các campus).
-- [`03_courses.sql`](file:///e:/Workspace/Mon_Hoc_FPT/EXE/NextUnity_BE/src/main/resources/sql/03_courses.sql) & [`04_modules.sql`](file:///e:/Workspace/Mon_Hoc_FPT/EXE/NextUnity_BE/src/main/resources/sql/04_modules.sql): Danh mục 7 khóa học và các chương mục.
-- [`update_rich_lessons.sql`](file:///e:/Workspace/Mon_Hoc_FPT/EXE/NextUnity_BE/src/main/resources/sql/update_rich_lessons.sql): Nội dung chuyên sâu 45 bài học lý thuyết học thuật và video YouTube 100% hợp lệ.
-- [`update_rich_community.sql`](file:///e:/Workspace/Mon_Hoc_FPT/EXE/NextUnity_BE/src/main/resources/sql/update_rich_community.sql): 9 bài viết thảo luận chuyên sâu, 10 tags, 14 comments và 66 reactions.
+Dự án cung cấp sẵn các tập lệnh SQL chất lượng cao tại thư mục `src/main/resources/sql/`
 
 Bạn có thể chạy trực tiếp các file SQL trên vào PostgreSQL thông qua **DBeaver** hoặc **pgAdmin**.
 

@@ -12,6 +12,7 @@ public interface PostService {
     PostResponse getPostById(UUID id);
     List<PostResponse> getPostsByAuthor(UUID authorId);
     List<PostResponse> getAllPosts();
+    List<PostResponse> getPopularPosts(int limit);
     PostResponse updatePost(UUID id, UpdatePostRequest request);
     void deletePost(UUID id);
 }
